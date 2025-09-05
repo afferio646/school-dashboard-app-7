@@ -1166,7 +1166,6 @@ function DASHBOARD() {
 }
 
 function HANDBOOK({    
-function HANDBOOK({
     handbookContent,
     handbookSections,
     handleSectionLinkClick,
@@ -1184,7 +1183,7 @@ function HANDBOOK({
     monitoredTrends,
     onViewUpdate
 }) {
-  // This is the COMPLETE and CORRECTED return block for the HANDBOOK component.
+  
 return (
     <div className="max-w-4xl mx-auto space-y-8">
         {/* --- NEW: The Watchtower is now the first card on this page --- */}
