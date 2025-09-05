@@ -1,3 +1,6 @@
+import React, { useState } from 'react';
+import { Calendar, ChevronLeft, ChevronRight } from "lucide-react";
+
 function HandbookAuditCard() {
     const [showCalendar, setShowCalendar] = useState(false);
     const [auditType, setAuditType] = useState('');
@@ -59,3 +62,5 @@ function HandbookAuditCard() {
         </>
     );
 }
+
+export default HandbookAuditCard;
