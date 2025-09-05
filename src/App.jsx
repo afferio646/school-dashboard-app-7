@@ -6,9 +6,9 @@ import { Bell, BookOpen, Shield, AlertCircle, TrendingUp, MessageCircle, Gavel, 
 import HandbookComparisonCard from './components/HandbookComparisonCard.jsx';
 import LegalReferenceJournal from './components/LegalReferenceJournal.jsx';
 import ExpandableOption from './components/ExpandableOption.jsx';
-// Add these two lines with your other component imports
 import PolicyWatchtower from './components/PolicyWatchtower.jsx';
 import ReviewUpdate from './components/ReviewUpdate.jsx';
+import Dashboard from './components/Dashboard.jsx';
 
 // --- SECURE API KEY HANDLING ---
 
@@ -1856,9 +1856,8 @@ Question: "${questionText}"`;
 // This is the FINAL version of the switch statement for your renderPage function.
 switch (page) {
     case 'dashboard':
-        // The dashboard now correctly shows the DASHBOARD component.
-        return <DASHBOARD />;
-
+        return <Dashboard />;
+        
     case 'risk':
         return <RiskAssessmentCenter 
                     handbookText={fullHandbookText} 
