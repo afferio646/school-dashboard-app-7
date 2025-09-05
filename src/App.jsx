@@ -1351,6 +1351,8 @@ function LEGAL({
         </div>
     );
 }
+// This is the COMPLETE and CORRECTED HOSQA component.
+// It replaces your entire existing HOSQA component.
 const HOSQA = ({
     industryQuestions,
     setIndustryQuestions,
@@ -1449,7 +1451,11 @@ const HOSQA = ({
                     )}
                 </div>
             </div>
-            <IndustryQuestionsCard industryQuestions={industryQuestions} onSectionLinkClick={onSectionLinkClick} onLegalLinkClick={onLegalLinkClick} />
+            <IndustryQuestionsCard 
+                industryQuestions={industryQuestions} 
+                onSectionLinkClick={onSectionLinkClick} 
+                onLegalLinkClick={onLegalLinkClick} 
+            />
         </div>
     );
 };
