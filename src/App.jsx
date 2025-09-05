@@ -6,7 +6,9 @@ import { Bell, BookOpen, Shield, AlertCircle, TrendingUp, MessageCircle, Gavel, 
 import HandbookComparisonCard from './components/HandbookComparisonCard.jsx';
 import LegalReferenceJournal from './components/LegalReferenceJournal.jsx';
 import ExpandableOption from './components/ExpandableOption.jsx';
-
+// Add these two lines with your other component imports
+import PolicyWatchtower from './components/PolicyWatchtower.jsx';
+import ReviewUpdate from './components/ReviewUpdate.jsx';
 
 // --- SECURE API KEY HANDLING ---
 
@@ -1278,6 +1280,18 @@ export default function App() {
     // Modal State
     const [legalJournalQuery, setLegalJournalQuery] = useState("");
     const [isLegalJournalOpen, setIsLegalJournalOpen] = useState(false);
+    const [handbook, setHandbook] = useState(handbookSectionLanguage);
+
+    const [pendingUpdates, setPendingUpdates] = useState([
+    { id: 1, title: "New State Law on Student Social Media Interaction", date: "2025-09-04", type: "Immediate Action Required", affectedSection: "6. Code of Conduct", rationale: "This new state law requires a more explicit policy than what is currently stated in the handbook regarding teacher-student communication on social media.", suggestedLanguage: "\n\n**6.3.1 Social Media and Electronic Communication:** All electronic communication between employees and students must be professional in nature and transparent. Employees are prohibited from 'friending' or 'following' current students on personal social media accounts. All communication should occur on school-approved platforms." }
+ ]);
+    const [archivedUpdates, setArchivedUpdates] = useState([]);
+    const [monitoredTrends, setMonitoredTrends] = useState([
+    { id: 2, title: "AI Integration in K-12 Curriculum", date: "2025-08-28", type: "Monitor for Future Consideration" },
+    { id: 3, title: "Rise in Four-Day School Weeks", date: "2025-08-25", type: "Monitor for Future Consideration" },
+  ]);
+
+    const [reviewingUpdate, setReviewingUpdate] = useState(null);
     const [industryQuestions, setIndustryQuestions] = useState([
     { id: 1, category: 'Human Resources', question: 'Has anyone hired an international teacher with U.S. work authorization?', answer: 'Solution: Schools often use H-1B visas for specialty occupations. It requires demonstrating the role needs a specific degree. Consult an immigration attorney to navigate the sponsorship process, including LCA filing and USCIS petitions.' },
     { id: 2, category: 'Human Resources', question: 'Do you allow flexible or remote summer work for employees? Any sample policies?', answer: 'Solution: Yes, many schools offer this. A good policy defines eligibility (e.g., role, performance), expectations for availability and communication, and technology/security requirements. Specify if it\'s fully remote or hybrid.' },
@@ -1313,12 +1327,33 @@ export default function App() {
         { key: "risk", label: "IQ Risk Assessment Center", icon: <AlertCircle className="w-5 h-5" /> },
         { key: "handbook", label: "IQ Handbook", icon: <BookOpen className="w-5 h-5" /> },
         { key: "calendar", label: "Calendar", icon: <Calendar className="w-5 h-5" /> },
-        { key: "alerts", label: "IQ Alerts", icon: <Bell className="w-5 h-5" /> },
-        { key: "trends", label: "IQ Trends", icon: <TrendingUp className="w-5 h-5" /> },
         { key: "hosqa", label: "IQ School Leaders Q&A", icon: <MessageCircle className="w-5 h-5" /> },
         { key: "legal", label: "IQ Legal Guidance", icon: <Gavel className="w-5 h-5" /> }
     ];
+    // --- NEW HANDLERS for the Policy Watchtower workflow ---
+    const handleApproveUpdate = (update) => {
+        const sectionKey = Object.keys(handbook).find(key => key.startsWith(update.affectedSection.split(' ')[0]));
+        if (sectionKey) {
+            setHandbook(prevHandbook => ({
+                ...prevHandbook,
+                [sectionKey]: prevHandbook[sectionKey] + update.suggestedLanguage
+            }));
+        }
+        setPendingUpdates(prev => prev.filter(item => item.id !== update.id));
+        setArchivedUpdates(prev => [{...update, status: 'Approved'}, ...prev]);
+        setReviewingUpdate(null); // Go back to dashboard
+    };
 
+    const handleArchiveUpdate = (update) => {
+        setPendingUpdates(prev => prev.filter(item => item.id !== update.id));
+        setArchivedUpdates(prev => [{...update, status: 'Archived'}, ...prev]);
+        setReviewingUpdate(null);
+    };
+
+    const handleDismissUpdate = (update) => {
+        setPendingUpdates(prev => prev.filter(item => item.id !== update.id));
+        setReviewingUpdate(null);
+    };
     const SCHOOL_LOGO = "https://i.ytimg.com/vi/wNI9LjpwVDU/maxresdefault.jpg";
 
     const alerts = [
@@ -1895,7 +1930,84 @@ Question: "${questionText}"`;
         );
     };
 
+// --- Main page rendering logic ---
+    const renderPage = () => {
+        // This is the new logic: if the user is reviewing an update, show the review screen.
+        if (reviewingUpdate) {
+            // Find the specific handbook section text to show in the review screen
+            const sectionKey = Object.keys(handbook).find(key => key.startsWith(reviewingUpdate.affectedSection.split(' ')[0]));
+            const sectionText = handbook[sectionKey];
 
+            return <ReviewUpdate
+                update={reviewingUpdate}
+                handbookSectionText={sectionText}
+                onApprove={handleApproveUpdate}
+                onArchive={handleArchiveUpdate}
+                onDismiss={handleDismissUpdate}
+                onClose={() => setReviewingUpdate(null)}
+            />;
+        }
+
+        // This is the old logic, now inside this function. It shows the correct page based on the sidebar selection.
+        switch (page) {
+            case 'dashboard':
+                return (
+                    <div className="flex flex-col gap-8 max-w-4xl mx-auto">
+                        <PolicyWatchtower
+                            pendingUpdates={pendingUpdates}
+                            archivedUpdates={archivedUpdates}
+                            monitoredTrends={monitoredTrends}
+                            onViewUpdate={setReviewingUpdate}
+                        />
+                        {/* We are also including your original DASHBOARD welcome message below it. */}
+                        {DASHBOARD}
+                    </div>
+                );
+            case 'risk':
+                return <RiskAssessmentCenter 
+                            handbookText={fullHandbookText} 
+                            apiKey={GEMINI_API_KEY} 
+                            handbookSectionLanguage={handbook} 
+                            onSectionLinkClick={handleSectionLinkClick} 
+                            onLegalLinkClick={handleOpenLegalJournal} 
+                        />;
+            case 'handbook':
+                // NOTE: We now pass the 'handbook' state to your HANDBOOK component
+                // so it can display the live, updated version.
+                return <HANDBOOK handbookContent={handbook} />;
+            case 'calendar':
+                return <CALENDAR />;
+            case 'hosqa':
+                return <HOSQA
+                    industryQuestions={industryQuestions}
+                    setIndustryQuestions={setIndustryQuestions}
+                    onSectionLinkClick={handleSectionLinkClick}
+                    onLegalLinkClick={handleOpenLegalJournal}
+                    submittedQuestion={submittedQuestion}
+                    setSubmittedQuestion={setSubmittedQuestion}
+                    isAnalyzing={isAnalyzing}
+                    setIsAnalyzing={setIsAnalyzing}
+                    currentAnswer={currentAnswer}
+                    setCurrentAnswer={setCurrentAnswer}
+                    hosQaQuestion={hosQaQuestion}
+                    setHosQaQuestion={setHosQaQuestion}
+                />;
+            case 'legal':
+                return <LEGAL />;
+            default:
+                // If something goes wrong, just show the dashboard
+                return (
+                     <div className="flex flex-col gap-8 max-w-4xl mx-auto">
+                        <PolicyWatchtower
+                            pendingUpdates={pendingUpdates}
+                            archivedUpdates={archivedUpdates}
+                            monitoredTrends={monitoredTrends}
+                            onViewUpdate={setReviewingUpdate}
+                        />
+                    </div>
+                );
+        }
+    };
     return (
         <div className="min-h-screen flex flex-col" style={{ background: "#fff" }}>
           <header className="shadow flex items-center justify-between px-4 sm:px-8 py-4" style={{ background: "#7c2d2d" }}>
@@ -1979,27 +2091,7 @@ Question: "${questionText}"`;
     </aside>
 
     <main className="flex-1 p-4 md:p-10 overflow-y-auto w-full" style={{ background: "#f3f4f6" }}>
-        {page === "dashboard" && DASHBOARD}
-        {page === "risk" && <RiskAssessmentCenter handbookText={fullHandbookText} apiKey={GEMINI_API_KEY} handbookSectionLanguage={handbookSectionLanguage} onSectionLinkClick={handleSectionLinkClick} onLegalLinkClick={handleOpenLegalJournal} />}
-        {page === "handbook" && HANDBOOK}
-        {page === "calendar" && <CALENDAR />}
-        {page === "alerts" && ALERTS}
-        {page === "trends" && TRENDS}
-        {page === "hosqa" && <HOSQA 
-        industryQuestions={industryQuestions} 
-        setIndustryQuestions={setIndustryQuestions} 
-        onSectionLinkClick={handleSectionLinkClick} 
-        onLegalLinkClick={handleOpenLegalJournal}
-        submittedQuestion={submittedQuestion}
-        setSubmittedQuestion={setSubmittedQuestion}
-        isAnalyzing={isAnalyzing}
-        setIsAnalyzing={setIsAnalyzing}
-        currentAnswer={currentAnswer}
-        setCurrentAnswer={setCurrentAnswer}
-        hosQaQuestion={hosQaQuestion}
-        setHosQaQuestion={setHosQaQuestion}
-        />}
-        {page === "legal" && LEGAL}
+      {renderPage()}
     </main>
 </div>
 
