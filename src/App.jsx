@@ -1148,6 +1148,210 @@ const findSectionByNumber = (numberStr) => {
     return null;
 };
 
+function DASHBOARD() {
+    return (
+        <div className="flex flex-col gap-8 max-w-4xl mx-auto">
+            <div className="shadow-2xl border-0" style={{ background: "#4B5C64" }}>
+                <div className="p-6" style={{ color: "#fff" }}>
+                    <SectionHeader icon={<Shield className="text-blue-400" size={28} />} title="Welcome" />
+                    <div className="text-lg text-white mb-3 space-y-4">
+                        <p><strong>Navigation IQ<sup style={{ fontSize: '0.6em' }}>TM</sup> is the new standard in dynamic policy, guidance, and risk management for school leaders.</strong></p>
+                        <p>Our System has been designed with input from school leaders as an intelligence based Micro Utility providing proactive clarity and solutions for risk management, policy guidance, industry insights, and counsel, empowering school leaders with efficient certainty to stay ahead of day-to-day challenges.</p>
+                        <p>Resolve faculty/student/parent issues and complaints, navigate legal complexities, identify handbook vulnerabilities, and protect your school community, while saving time, reducing costs, and strengthening your leadership impact.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+function HANDBOOK({    
+function HANDBOOK({
+    handbookContent,
+    handbookSections,
+    handleSectionLinkClick,
+    isSectionLanguageOpen,
+    setIsSectionLanguageOpen,
+    selectedSection,
+    setSelectedSection,
+    setShowSuggestionModal,
+    setSuggestedUpdate,
+    suggestionSectionRef,
+    suggestedSectionLanguage,
+    fullHandbookText,
+    pendingUpdates,
+    archivedUpdates,
+    monitoredTrends,
+    onViewUpdate
+}) {
+  // This is the COMPLETE and CORRECTED return block for the HANDBOOK component.
+return (
+    <div className="max-w-4xl mx-auto space-y-8">
+        {/* --- NEW: The Watchtower is now the first card on this page --- */}
+        <PolicyWatchtower
+            pendingUpdates={pendingUpdates}
+            archivedUpdates={archivedUpdates}
+            monitoredTrends={monitoredTrends}
+            onViewUpdate={onViewUpdate}
+        />
+
+        {/* This is the original content of the Handbook page */}
+        <div className="shadow-2xl border-0" style={{ background: "#4B5C64" }}>
+            <div className="p-6" style={{ color: "#fff" }}>
+                <SectionHeader icon={<BookOpen className="text-[#faecc4]" size={26} />} title="IQ Handbook" />
+                <div>
+                    <h3 className="text-lg font-bold mb-2" style={{ color: "#faecc4" }}>1. Review by Section</h3>
+                    <div className="mb-2">
+                        <label className="block font-medium">Select Section</label>
+                        <select
+                            className="mt-1 block w-full border rounded p-2 shadow text-black"
+                            style={{ background: "#fff", border: "2px solid #faecc4" }}
+                            value={selectedSection}
+                            onChange={e => {
+                                setSelectedSection(e.target.value);
+                                setIsSectionLanguageOpen(false);
+                            }}
+                        >
+                            {handbookSections(handleSectionLinkClick).map((s) => <option key={s.section} value={s.section}>{s.section}</option>)}
+                        </select>
+                    </div>
+                    <div className="mb-2">
+                        <button className="text-lg font-bold cursor-pointer focus:outline-none" style={{ color: "#faecc4" }} onClick={() => setIsSectionLanguageOpen(open => !open)}>
+                            {selectedSection.split('. ').slice(1).join('. ')}
+                        </button>
+                        <span className="ml-2 text-xs" style={{ color: "#fff" }}>(Click to show/hide full Handbook Section language)</span>
+                    </div>
+                    {isSectionLanguageOpen && (
+                        <div className="bg-slate-100 p-4 rounded-xl mb-4 shadow-inner border border-slate-200 whitespace-pre-line text-black" style={{ maxHeight: "320px", overflowY: "auto", fontSize: "1rem", lineHeight: "1.55" }}>
+                            {handbookContent[selectedSection] || "Language not available."}
+                        </div>
+                    )}
+                    <div className="font-semibold mt-10 mb-2" style={{ color: "#FFF" }}>Potential Section Vulnerabilities</div>
+                    <ul className="ml-6 text-sm list-disc">
+                        {(handbookSections(handleSectionLinkClick).find(s => s.section === selectedSection)?.vulnerabilities || []).map((vuln, i) => (
+                            <li key={i} className={`pl-1 mb-2 p-2 rounded-lg flex items-center gap-2 shadow ${vuln.source === "Industry Trend" ? "bg-yellow-100 border-l-4 border-yellow-400" : "bg-red-100 border-l-4 border-red-400"}`}>
+                                <AlertCircle size={16} className={vuln.source === "Industry Trend" ? "text-slate-600" : "text-red-600"} />
+                                <span style={{ color: "#334155" }}>{vuln.text}</span>
+                                <span className="ml-auto text-xs px-2 py-0.5 rounded-full font-semibold bg-slate-200 text-slate-600">{vuln.source}</span>
+                            </li>
+                        ))}
+                    </ul>
+                     <div className="flex justify-end mt-4">
+                        <button
+                            className="bg-blue-700 hover:bg-blue-800 text-white font-semibold px-6 py-2 rounded-xl shadow-lg flex items-center gap-2 transition-all"
+                            onClick={() => {
+                                const s = handbookSections(handleSectionLinkClick).find(s => s.section === selectedSection);
+                                suggestionSectionRef.current = s.section;
+                                setSuggestedUpdate(suggestedSectionLanguage[s.section] || "Clarify this policy with specific procedures.");
+                                setShowSuggestionModal(true);
+                            }}
+                        >
+                            <TrendingUp size={18} className="text-white opacity-80" />
+                            Suggested Handbook Changes
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <HandbookAuditCard />
+        <HandbookComparisonCard apiKey={GEMINI_API_KEY} />
+        <HandbookVulnerabilitiesCard sections={handbookSections} onSectionLinkClick={handleSectionLinkClick} />
+    </div>
+);
+
+function LEGAL({
+    legalQuestion,
+    setLegalQuestion,
+    submittedLegalQuestion,
+    handleLegalQaClose,
+    handleLegalQaSubmit,
+    isAnalyzingLegal,
+    legalAnswer,
+    handleSectionLinkClick,
+    handleOpenLegalJournal
+}) {
+    return (
+        <div className="max-w-2xl mx-auto space-y-8">
+            <div className="shadow-2xl border-0 rounded-2xl" style={{ background: "#4B5C64", color: "#fff" }}>
+                <div className="p-6">
+                    <SectionHeader icon={<Gavel className="text-[#faecc4]" size={26} />} title="IQ Legal Guidance" />
+                    <div className="mb-6 text-white space-y-3">
+                        <p><strong>Structured Legal Analysis:</strong> Get preliminary legal guidance on complex legal issues.</p>
+                        <ul className="list-disc pl-5 space-y-1 text-sm">
+                            <li><strong>Legal Answer:</strong> A direct, actionable answer.</li>
+                            <li><strong>Key References:</strong> Citations to the relevant law.</li>
+                            <li><strong>Risk Analysis & Recommendation:</strong> An assessment of the potential pitfalls and clear, immediate next steps.</li>
+                        </ul>
+                        <p className="text-sm pt-2">This tool provides an initial analysis and guidance based on common legal frameworks, but it is not a substitute for advice from your school's attorney.</p>
+                    </div>
+                    <p className="mb-2 font-semibold text-white">Enter a legal question or discussion for analysis...</p>
+                    <textarea
+                        placeholder="e.g. We've received a subpoena from a local law firm demanding all of a student's academic and disciplinary records for a custody case. Do we have to comply immediately?"
+                        className="mb-2 min-h-[100px] w-full p-2 rounded-md text-black"
+                        style={{ background: "#fff", border: "2px solid #faecc4" }}
+                        value={legalQuestion}
+                        onChange={e => setLegalQuestion(e.target.value)}
+                    />
+                    <button
+                        className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-5 rounded-lg mb-4 py-1"
+                        onClick={submittedLegalQuestion ? handleLegalQaClose : handleLegalQaSubmit}
+                        disabled={isAnalyzingLegal}
+                    >
+                        {isAnalyzingLegal ? "Analyzing..." : (submittedLegalQuestion ? "Clear Analysis" : "Submit for Analysis")}
+                    </button>
+
+                    {submittedLegalQuestion && (
+                        <div className="mt-4 p-4 bg-gray-700 rounded-lg">
+                            <p className="font-semibold italic text-white mb-4">{`Q: "${submittedLegalQuestion}"`}</p>
+                            {isAnalyzingLegal && <p className="text-sm text-yellow-400">Analyzing...</p>}
+                            {legalAnswer && (
+                                <div className="space-y-4 text-sm">
+                                    <div className="p-3 bg-gray-800 rounded-md border-l-4 border-blue-400">
+                                        <h4 className="font-bold text-blue-300 mb-1">Legal Guidance</h4>
+                                        <AIContentRenderer content={legalAnswer.guidance} onSectionLinkClick={handleSectionLinkClick} onLegalLinkClick={handleOpenLegalJournal} />
+                                    </div>
+                                    <div className="p-3 bg-gray-800 rounded-md border-l-4 border-green-400">
+                                        <h4 className="font-bold text-green-300 mb-1">Key References</h4>
+                                        <AIContentRenderer content={legalAnswer.references} onSectionLinkClick={handleSectionLinkClick} onLegalLinkClick={handleOpenLegalJournal} />
+                                    </div>
+                                    <div className={`p-3 bg-gray-800 rounded-md border-l-4 ${legalAnswer.risk.level === 'High' ? 'border-red-400' : 'border-yellow-400'}`}>
+                                        <h4 className={`font-bold ${legalAnswer.risk.level === 'High' ? 'text-red-300' : 'text-yellow-300'} mb-1`}>Risk Analysis & Recommendation</h4>
+                                        <p className="mb-2"><strong>Level: {legalAnswer.risk.level}</strong></p>
+                                        <p className="mb-2">{legalAnswer.risk.analysis}</p>
+                                        <ol className="list-decimal list-inside space-y-1">
+                                            {legalAnswer.risk.recommendation.map((step, i) => (
+                                                <li key={i}>{step}</li>
+                                            ))}
+                                        </ol>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    )}
+                </div>
+            </div>
+             <div className="shadow-2xl border-0 rounded-2xl" style={{ background: "#4B5C64", color: "#fff" }}>
+                <div className="p-6">
+                    <SectionHeader icon={<Gavel className="text-[#faecc4]" size={26} />} title="Get Direct Legal Help" />
+                    <div className="mb-3">
+                        Reach out for legal counsel about your issue. Begin by adding a brief overview below, and click submit to schedule a phone conference.<br />
+                        <span className="text-blue-400 text-xs">(Annual Legal Counsel Credits will be applied if applicable.)</span>
+                    </div>
+                    <textarea
+                        className="w-full min-h-[100px] border rounded-md mb-2 p-2 text-black"
+                        placeholder="Briefly describe your legal issue or question..."
+                        style={{ background: "#fff", border: "2px solid #faecc4" }}
+                    />
+                    <button
+                        className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2 rounded-lg mt-2"
+                    >
+                        Submit &amp; Schedule Call
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+}
 const HOSQA = ({
     industryQuestions,
     setIndustryQuestions,
@@ -1250,6 +1454,7 @@ const HOSQA = ({
         </div>
     );
 };
+
 export default function App() {
     const [page, setPage] = useState("dashboard");
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -1521,312 +1726,7 @@ Question: "${questionText}"`;
         setSubmittedLegalQuestion(null);
         setLegalAnswer(null);
     };
-
-
-    const DASHBOARD = (
-        <div className="flex flex-col gap-8 max-w-4xl mx-auto">
-            <div className="shadow-2xl border-0" style={{ background: "#4B5C64" }}>
-                <div className="p-6" style={{ color: "#fff" }}>
-                    <SectionHeader icon={<Shield className="text-blue-400" size={28} />} title="Welcome" />
-                    <div className="text-lg text-white mb-3 space-y-4">
-                        <p><strong>Navigation IQ<sup style={{ fontSize: '0.6em' }}>TM</sup> is the new standard in dynamic policy, guidance, and risk management for school leaders.</strong></p>
-                        <p>Our System has been designed with input from school leaders as an intelligence based Micro Utility providing proactive clarity and solutions for risk management, policy guidance, industry insights, and counsel, empowering school leaders with efficient certainty to stay ahead of day-to-day challenges.</p>
-                        <p>Resolve faculty/student/parent issues and complaints, navigate legal complexities, identify handbook vulnerabilities, and protect your school community, while saving time, reducing costs, and strengthening your leadership impact.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
-
-    const HANDBOOK = (
-        <div className="max-w-2xl mx-auto space-y-8">
-            <div className="shadow-2xl border-0" style={{ background: "#4B5C64" }}>
-                <div className="p-6" style={{ color: "#fff" }}>
-                    <SectionHeader icon={<BookOpen className="text-[#faecc4]" size={26} />} title="IQ Handbook" />
-
-                    <div>
-                        <h3 className="text-lg font-bold mb-2" style={{ color: "#faecc4" }}>1. Review by Section</h3>
-                        <div className="mb-2">
-                            <label className="block font-medium">Select Section</label>
-                            <select
-                                className="mt-1 block w-full border rounded p-2 shadow text-black"
-                                style={{ background: "#fff", border: "2px solid #faecc4" }}
-                                value={selectedSection}
-                                onChange={e => {
-                                    setSelectedSection(e.target.value);
-                                    setIsSectionLanguageOpen(false);
-                                }}
-                            >
-                                {handbookSections(handleSectionLinkClick).map((s) => <option key={s.section} value={s.section}>{s.section}</option>)}
-                            </select>
-                        </div>
-                        <div className="mb-2">
-                            <button className="text-lg font-bold cursor-pointer focus:outline-none" style={{ color: "#faecc4" }} onClick={() => setIsSectionLanguageOpen(open => !open)}>
-                            {selectedSection.split('. ').slice(1).join('. ')}
-                            </button>
-                            <span className="ml-2 text-xs" style={{ color: "#fff" }}>(Click to show/hide full Handbook Section language)</span>
-                        </div>
-                        {isSectionLanguageOpen && (
-                            <div className="bg-slate-100 p-4 rounded-xl mb-4 shadow-inner border border-slate-200 whitespace-pre-line text-black" style={{ maxHeight: "320px", overflowY: "auto", fontSize: "1rem", lineHeight: "1.55" }}>
-                                {handbookSectionLanguage[selectedSection] || "Language not available."}
-                            </div>
-                        )}
-                        <div className="font-semibold mt-10 mb-2" style={{ color: "#FFF" }}>Potential Section Vulnerabilities</div>
-                        <ul className="ml-6 text-sm list-disc">
-                            {(handbookSections(handleSectionLinkClick).find(s => s.section === selectedSection)?.vulnerabilities || []).map((vuln, i) => (
-                                <li key={i} className={`pl-1 mb-2 p-2 rounded-lg flex items-center gap-2 shadow ${vuln.source === "Industry Trend" ? "bg-yellow-100 border-l-4 border-yellow-400" : "bg-red-100 border-l-4 border-red-400"}`}>
-                                    <AlertCircle size={16} className={vuln.source === "Industry Trend" ? "text-slate-600" : "text-red-600"} />
-                                    <span style={{ color: "#334155" }}>{vuln.text}</span>
-                                    <span className="ml-auto text-xs px-2 py-0.5 rounded-full font-semibold bg-slate-200 text-slate-600">{vuln.source}</span>
-                                </li>
-                            ))}
-                        </ul>
-                         <div className="flex justify-end mt-4">
-                            <button
-                                className="bg-blue-700 hover:bg-blue-800 text-white font-semibold px-6 py-2 rounded-xl shadow-lg flex items-center gap-2 transition-all"
-                                onClick={() => {
-                                    const s = handbookSections(handleSectionLinkClick).find(s => s.section === selectedSection);
-                                    suggestionSectionRef.current = s.section;
-                                    setSuggestedUpdate(suggestedSectionLanguage[s.section] || "Clarify this policy with specific procedures.");
-                                    setShowSuggestionModal(true);
-                                }}
-                            >
-                                <TrendingUp size={18} className="text-white opacity-80" />
-                                Suggested Handbook Changes
-                            </button>
-                        </div>
-                    </div>
-
-                    <hr className="my-8 border-gray-500" />
-
-                    <div>
-                        <h3 className="text-lg font-bold mb-2" style={{ color: "#faecc4" }}>2. Search Handbook by Topic</h3>
-                        <p className="mb-4 text-white">Enter a topic to find relevant language in the handbook.</p>
-                        <textarea
-                            placeholder="e.g., Confidentiality, Remote Work, Discipline..."
-                            className="mb-2 w-full p-2 rounded-md text-black"
-                            style={{ background: "#fff", border: "2px solid #faecc4" }}
-                            value={handbookTopicQuery}
-                            onChange={e => setHandbookTopicQuery(e.target.value)}
-                        />
-                        <button
-                            className="bg-blue-700 hover:bg-blue-800 text-white font-semibold px-6 py-2 rounded-xl shadow-lg"
-                            onClick={handleTopicSearch}
-                            disabled={isAnalyzingTopic}
-                        >
-                            {isAnalyzingTopic ? "Analyzing..." : "Analyze Handbook"}
-                        </button>
-
-                        {handbookTopicResults && (
-                            <div className="mt-6">
-                                <div className="flex justify-between items-center mb-2">
-                                    <h4 className="font-bold text-white">Results for "{handbookTopicQuery}"</h4>
-                                    <button className="text-white hover:bg-gray-600 p-1 rounded-md" onClick={() => { setHandbookTopicResults(null); setHandbookTopicQuery(""); }}>
-                                        Clear Results
-                                    </button>
-                                </div>
-                                <div
-                                    className="bg-slate-100 p-4 rounded-xl shadow-inner border border-slate-200 space-y-4"
-                                    style={{ color: "#222", maxHeight: "400px", overflowY: "scroll" }}
-                                >
-                                    {handbookTopicResults.length > 0 ? (
-                                        handbookTopicResults.map((result, index) => (
-                                            <div key={index} className="border-b border-gray-300 pb-3 last:border-b-0">
-                                                <h5 className="font-bold text-md text-slate-800 mb-2">{result.mainTitle}</h5>
-                                                {result.subsections.map((sub, subIndex) => (
-                                                    <div key={subIndex} className="pl-4 border-l-2 border-slate-300 mb-2 last:mb-0">
-                                                        <HighlightedText text={sub} highlight={handbookTopicQuery} />
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        ))
-                                    ) : (
-                                        <p className="text-slate-600">No results found for "{handbookTopicQuery}".</p>
-                                    )}
-                                </div>
-                            </div>
-                        )}
-                    </div>
-                </div>
-            </div>
-            <HandbookAuditCard />
-            <HandbookComparisonCard apiKey={GEMINI_API_KEY} />
-            <HandbookVulnerabilitiesCard sections={handbookSections} onSectionLinkClick={handleSectionLinkClick} />
-        </div>
-    );
-
-    const ALERTS = (
-        <div className="max-w-2xl mx-auto space-y-8">
-            <div className="shadow-2xl border-0 rounded-2xl" style={{ background: "#4B5C64", color: "#fff" }}>
-                <div className="p-6">
-                    <SectionHeader icon={<Bell className="text-[#faecc4]" size={26} />} title="IQ Alerts" />
-                           <div className="mb-6 text-white space-y-4">
-                                <p><strong>Below are current alerts gathered from several direct resources.</strong></p>
-                                <p><strong>Click the View Source button for direct links to relevant subject matter.</strong></p>
-                            </div>
-                    <div className="max-h-96 overflow-y-scroll pr-2">
-                        {alerts.map((a, i) => (
-                            <React.Fragment key={i}>
-                                <div className="p-2 rounded-lg hover:bg-gray-700 transition-colors">
-                                    <p>{a.text} <span className="text-sm text-gray-400">- {formatDate(a.date)}</span></p>
-                                    <div className="flex justify-start mt-2">
-                                        {a.link && (
-                                            <a
-                                                href={a.link}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="bg-purple-600 hover:bg-purple-700 text-white font-semibold px-4 py-1 rounded-lg text-xs flex items-center gap-1"
-                                            >
-                                                <ExternalLink size={12} />
-                                                View Source
-                                            </a>
-                                        )}
-                                        {a.hasButton && (
-                                            <button
-                                                className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-1 rounded-lg text-xs"
-                                                onClick={() => handleShowSuggestion(a)}
-                                            >
-                                                Handbook Consideration
-                                            </button>
-                                        )}
-                                    </div>
-                                </div>
-                                {i < alerts.length - 1 && <hr className="border-gray-600 my-1" />}
-                            </React.Fragment>
-                        ))}
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
-
-    const TRENDS = (
-        <div className="max-w-2xl mx-auto space-y-8">
-            <div className="shadow-2xl border-0 rounded-2xl" style={{ background: "#4B5C64", color: "#fff" }}>
-                <div className="p-6">
-                    <SectionHeader icon={<TrendingUp className="text-[#faecc4]" size={26} />} title="IQ Trends" />
-                    <div className="mb-6 text-white space-y-4">
-                        <p><strong>Below are current industry trends and legislation articles and information gathered from several direct resources.</strong></p>
-                        <p><strong>Click the View Source button for direct links to relevant subject matter.</strong></p>
-                    </div>
-                           <div className="max-h-96 overflow-y-scroll pr-2">
-                            {trends.map((t, i) => (
-                                <React.Fragment key={i}>
-                                    <div className="p-2 rounded-lg hover:bg-gray-700 transition-colors">
-                                        <p>{t.text} <span className="text-sm text-gray-400">- {formatDate(t.date)}</span></p>
-                                        <div className="flex justify-start mt-2">
-                                            {t.link && (
-                                                <a
-                                                    href={t.link}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    className="bg-purple-600 hover:bg-purple-700 text-white font-semibold px-4 py-1 rounded-lg text-xs flex items-center gap-1"
-                                                >
-                                                    <ExternalLink size={12} />
-                                                    View Source
-                                                </a>
-                                            )}
-                                            {t.hasButton && (
-                                                <button
-                                                    className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-1 rounded-lg text-xs"
-                                                    onClick={() => handleShowSuggestion(t)}
-                                                >
-                                                    Handbook Consideration
-                                                </button>
-                                            )}
-                                        </div>
-                                    </div>
-                                    {i < trends.length - 1 && <hr className="border-gray-600 my-1" />}
-                                </React.Fragment>
-                            ))}
-                        </div>
-                </div>
-            </div>
-        </div>
-    );
-
-     const LEGAL = (
-        <div className="max-w-2xl mx-auto space-y-8">
-            <div className="shadow-2xl border-0 rounded-2xl" style={{ background: "#4B5C64", color: "#fff" }}>
-                <div className="p-6">
-                    <SectionHeader icon={<Gavel className="text-[#faecc4]" size={26} />} title="IQ Legal Guidance" />
-                    <div className="mb-6 text-white space-y-3">
-                        <p><strong>Structured Legal Analysis:</strong> Get preliminary legal guidance on complex legal issues.</p>
-                        <ul className="list-disc pl-5 space-y-1 text-sm">
-                            <li><strong>Legal Answer:</strong> A direct, actionable answer.</li>
-                            <li><strong>Key References:</strong> Citations to the relevant law.</li>
-                            <li><strong>Risk Analysis & Recommendation:</strong> An assessment of the potential pitfalls and clear, immediate next steps.</li>
-                        </ul>
-                        <p className="text-sm pt-2">This tool provides an initial analysis and guidance based on common legal frameworks, but it is not a substitute for advice from your school's attorney.</p>
-                    </div>
-                    <p className="mb-2 font-semibold text-white">Enter a legal question or discussion for analysis...</p>
-                    <textarea
-                        placeholder="e.g. We've received a subpoena from a local law firm demanding all of a student's academic and disciplinary records for a custody case. Do we have to comply immediately?"
-                        className="mb-2 min-h-[100px] w-full p-2 rounded-md text-black"
-                        style={{ background: "#fff", border: "2px solid #faecc4" }}
-                        value={legalQuestion}
-                        onChange={e => setLegalQuestion(e.target.value)}
-                    />
-                    <button
-                        className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-5 rounded-lg mb-4 py-1"
-                        onClick={submittedLegalQuestion ? handleLegalQaClose : handleLegalQaSubmit}
-                        disabled={isAnalyzingLegal}
-                    >
-                        {isAnalyzingLegal ? "Analyzing..." : (submittedLegalQuestion ? "Clear Analysis" : "Submit for Analysis")}
-                    </button>
-
-                    {submittedLegalQuestion && (
-                        <div className="mt-4 p-4 bg-gray-700 rounded-lg">
-                            <p className="font-semibold italic text-white mb-4">{`Q: "${submittedLegalQuestion}"`}</p>
-                            {isAnalyzingLegal && <p className="text-sm text-yellow-400">Analyzing...</p>}
-                            {legalAnswer && (
-                                <div className="space-y-4 text-sm">
-                                    <div className="p-3 bg-gray-800 rounded-md border-l-4 border-blue-400">
-                                        <h4 className="font-bold text-blue-300 mb-1">Legal Guidance</h4>
-                                        <AIContentRenderer content={legalAnswer.guidance} onSectionLinkClick={handleSectionLinkClick} onLegalLinkClick={handleOpenLegalJournal} />
-                                    </div>
-                                    <div className="p-3 bg-gray-800 rounded-md border-l-4 border-green-400">
-                                        <h4 className="font-bold text-green-300 mb-1">Key References</h4>
-                                        <AIContentRenderer content={legalAnswer.references} onSectionLinkClick={handleSectionLinkClick} onLegalLinkClick={handleOpenLegalJournal} />
-                                    </div>
-                                    <div className={`p-3 bg-gray-800 rounded-md border-l-4 ${legalAnswer.risk.level === 'High' ? 'border-red-400' : 'border-yellow-400'}`}>
-                                        <h4 className={`font-bold ${legalAnswer.risk.level === 'High' ? 'text-red-300' : 'text-yellow-300'} mb-1`}>Risk Analysis & Recommendation</h4>
-                                        <p className="mb-2"><strong>Level: {legalAnswer.risk.level}</strong></p>
-                                        <p className="mb-2">{legalAnswer.risk.analysis}</p>
-                                        <ol className="list-decimal list-inside space-y-1">
-                                            {legalAnswer.risk.recommendation.map((step, i) => (
-                                                <li key={i}>{step}</li>
-                                            ))}
-                                        </ol>
-                                    </div>
-                                </div>
-                            )}
-                        </div>
-                    )}
-                </div>
-            </div>
-             <div className="shadow-2xl border-0 rounded-2xl" style={{ background: "#4B5C64", color: "#fff" }}>
-                <div className="p-6">
-                    <SectionHeader icon={<Gavel className="text-[#faecc4]" size={26} />} title="Get Direct Legal Help" />
-                    <div className="mb-3">
-                        Reach out for legal counsel about your issue. Begin by adding a brief overview below, and click submit to schedule a phone conference.<br />
-                        <span className="text-blue-400 text-xs">(Annual Legal Counsel Credits will be applied if applicable.)</span>
-                    </div>
-                    <textarea
-                        className="w-full min-h-[100px] border rounded-md mb-2 p-2 text-black"
-                        placeholder="Briefly describe your legal issue or question..."
-                        style={{ background: "#fff", border: "2px solid #faecc4" }}
-                    />
-                    <button
-                        className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2 rounded-lg mt-2"
-                    >
-                        Submit &amp; Schedule Call
-                    </button>
-                </div>
-            </div>
-        </div>
-    );
-
+       
     const CALENDAR = () => {
         const [currentDate, setCurrentDate] = useState(new Date(2025, 7, 1));
         const [events, setEvents] = useState([
@@ -1947,16 +1847,13 @@ Question: "${questionText}"`;
                 onClose={() => setReviewingUpdate(null)}
             />;
         }
-
-        // This is the old logic, now inside this function. It shows the correct page based on the sidebar selection.
+     
+// This is the FINAL version of the switch statement for your renderPage function.
 switch (page) {
     case 'dashboard':
-        return (
-            <div className="flex flex-col gap-8 max-w-4xl mx-auto">
-                {/* We will move the watchtower later. For now, we put the welcome message back. */}
-                {DASHBOARD}
-            </div>
-        );
+        // The dashboard now correctly shows the DASHBOARD component.
+        return <DASHBOARD />;
+
     case 'risk':
         return <RiskAssessmentCenter 
                     handbookText={fullHandbookText} 
@@ -1965,36 +1862,62 @@ switch (page) {
                     onSectionLinkClick={handleSectionLinkClick} 
                     onLegalLinkClick={handleOpenLegalJournal} 
                 />;
+
     case 'handbook':
-        // This now correctly returns your HANDBOOK component.
-        return <HANDBOOK handbookContent={handbook} />;
+        // The handbook page now receives all the state and functions it needs to operate.
+        return <HANDBOOK 
+                    handbookContent={handbook}
+                    handbookSections={handbookSections}
+                    handleSectionLinkClick={handleSectionLinkClick}
+                    isSectionLanguageOpen={isSectionLanguageOpen}
+                    setIsSectionLanguageOpen={setIsSectionLanguageOpen}
+                    selectedSection={selectedSection}
+                    setSelectedSection={setSelectedSection}
+                    setShowSuggestionModal={setShowSuggestionModal}
+                    setSuggestedUpdate={setSuggestedUpdate}
+                    suggestionSectionRef={suggestionSectionRef}
+                    suggestedSectionLanguage={suggestedSectionLanguage}
+                    pendingUpdates={pendingUpdates}
+                    archivedUpdates={archivedUpdates}
+                    monitoredTrends={monitoredTrends}
+                    onViewUpdate={setReviewingUpdate}
+                />;
+
     case 'calendar':
         return <CALENDAR />;
+
     case 'hosqa':
         return <HOSQA
-            industryQuestions={industryQuestions}
-            setIndustryQuestions={setIndustryQuestions}
-            onSectionLinkClick={handleSectionLinkClick}
-            onLegalLinkClick={handleOpenLegalJournal}
-            submittedQuestion={submittedQuestion}
-            setSubmittedQuestion={setSubmittedQuestion}
-            isAnalyzing={isAnalyzing}
-            setIsAnalyzing={setIsAnalyzing}
-            currentAnswer={currentAnswer}
-            setCurrentAnswer={setCurrentAnswer}
-            hosQaQuestion={hosQaQuestion}
-            setHosQaQuestion={setHosQaQuestion}
-        />;
+                    industryQuestions={industryQuestions}
+                    setIndustryQuestions={setIndustryQuestions}
+                    onSectionLinkClick={handleSectionLinkClick}
+                    onLegalLinkClick={handleOpenLegalJournal}
+                    submittedQuestion={submittedQuestion}
+                    setSubmittedQuestion={setSubmittedQuestion}
+                    isAnalyzing={isAnalyzing}
+                    setIsAnalyzing={setIsAnalyzing}
+                    currentAnswer={currentAnswer}
+                    setCurrentAnswer={setCurrentAnswer}
+                    hosQaQuestion={hosQaQuestion}
+                    setHosQaQuestion={setHosQaQuestion}
+                />;
+
     case 'legal':
-        // This now correctly returns your LEGAL component.
-        return <LEGAL />;
+        return <LEGAL
+                    legalQuestion={legalQuestion}
+                    setLegalQuestion={setLegalQuestion}
+                    submittedLegalQuestion={submittedLegalQuestion}
+                    handleLegalQaClose={handleLegalQaClose}
+                    handleLegalQaSubmit={handleLegalQaSubmit}
+                    isAnalyzingLegal={isAnalyzingLegal}
+                    legalAnswer={legalAnswer}
+                    handleSectionLinkClick={handleSectionLinkClick}
+                    handleOpenLegalJournal={handleOpenLegalJournal}
+                />;
+
     default:
-        // Default to the dashboard view
-        return (
-             <div className="flex flex-col gap-8 max-w-4xl mx-auto">
-                {DASHBOARD}
-            </div>
-        );
+        // If anything goes wrong, default to the main dashboard.
+        return <DASHBOARD />;
 }
     return (
         <div className="min-h-screen flex flex-col" style={{ background: "#fff" }}>
