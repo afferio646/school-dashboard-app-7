@@ -2,18 +2,16 @@ import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react'
 import { Bell, BookOpen, Shield, AlertCircle, TrendingUp, MessageCircle, Gavel, ChevronLeft, ChevronRight, Calendar, X, Archive, ExternalLink, Search, Menu } from "lucide-react";
 
 // --- COMPONENT IMPORTS ---
-// Paths are set to the components subfolder as per your project structure.
 import HandbookComparisonCard from './components/HandbookComparisonCard.jsx';
 import LegalReferenceJournal from './components/LegalReferenceJournal.jsx';
 import ExpandableOption from './components/ExpandableOption.jsx';
-import PolicyWatchtower from './components/PolicyWatchtower.jsx';
 import ReviewUpdate from './components/ReviewUpdate.jsx';
 import Dashboard from './components/Dashboard.jsx';
 import Handbook from './components/Handbook.jsx';
 import HandbookAuditCard from './components/HandbookAuditCard.jsx';
+// PolicyWatchtower is no longer imported here, it's used inside Handbook.jsx
 
 // --- SECURE API KEY HANDLING ---
-
 const GEMINI_API_KEY = "AIzaSyCYAfKVJ9BTLWHpNLDr0bHDsvYOdWMfIpw";
 
 // --- Helper Components ---
@@ -104,17 +102,14 @@ function ParsedContent({ text, onSectionLinkClick, onLegalLinkClick }) {
         </>
     );
 }
-// Component 2: Handles the structure of the AI response and tells ParsedContent what to render.
-// Its only job is to understand the shape of your data (objects, arrays, etc.).
+
 function AIContentRenderer({ content, onSectionLinkClick, onLegalLinkClick, openOptions, onOptionToggle }) {
     if (!content) return null;
 
-    // If it's already a React element (like from the pre-written demos), render it directly.
     if (React.isValidElement(content)) {
         return content;
     }
 
-    // If it's an array, handle its structure.
     if (Array.isArray(content)) {
         if (content.length > 0 && typeof content[0] === 'object' && content[0] !== null && 'header' in content[0]) {
             return (
@@ -135,7 +130,6 @@ function AIContentRenderer({ content, onSectionLinkClick, onLegalLinkClick, open
         );
     }
 
-    // If it's an object, handle its structure.
     if (typeof content === 'object' && content !== null) {
         if (content.recommendationSummary && content.implementationSteps) {
             return (
@@ -160,12 +154,12 @@ function AIContentRenderer({ content, onSectionLinkClick, onLegalLinkClick, open
                                     title={option.title}
                                     isOpen={!!openOptions[key]}
                                     onToggle={() => onOptionToggle(key)}
-                                 >
+                                >
                                     <AIContentRenderer content={option} onSectionLinkClick={onSectionLinkClick} onLegalLinkClick={onLegalLinkClick} />
                                 </ExpandableOption>
                             );
-                         }
-                         return null;
+                        }
+                        return null;
                     })}
                 </div>
             );
@@ -174,7 +168,7 @@ function AIContentRenderer({ content, onSectionLinkClick, onLegalLinkClick, open
         return (
             <div className="space-y-3 text-white">
                 {Object.entries(content).map(([prop, val]) => {
-                    if (prop === 'title') return null; // Don't render the title again inside the expandable
+                    if (prop === 'title') return null; 
                     const formattedProp = prop.charAt(0).toUpperCase() + prop.slice(1).replace(/([A-Z])/g, ' $1');
 
                     if (prop === 'suggestedLanguage') {
@@ -198,7 +192,6 @@ function AIContentRenderer({ content, onSectionLinkClick, onLegalLinkClick, open
         );
     }
     
-    // Fallback for simple strings
     if (typeof content === 'string') {
         return (
             <div className="text-white space-y-2">
@@ -576,7 +569,6 @@ function RiskAssessmentCenter({ handbookText, apiKey, handbookSectionLanguage, o
             ]},
             step4: { title: "Administrator Response Options", content: <> <ExpandableOption title="Option A – Firm, Policy-Based, & Supportive"> <p>“Thank you for your inquiry. Per our employee handbook (<SectionLink number="5" onLinkClick={onSectionLinkClick}>Section 5</SectionLink>), sick leave is designated for illness and other specified emergencies and is not convertible to vacation time. Additionally, the handbook states that unused sick leave is not paid out upon separation (<SectionLink number="4.3" onLinkClick={onSectionLinkClick} />). We can, however, schedule a meeting to discuss your final pay and benefits transition to ensure a smooth departure.”</p> <p><strong>Policy Match:</strong> <SectionLink number="4.3" onLinkClick={onSectionLinkClick} />, <SectionLink number="5" onLinkClick={onSectionLinkClick}>Section 5</SectionLink></p> <p><strong>Risk Score:</strong> Low</p> <p><strong>Legal Reference:</strong> *Johnson v. Independent School District No. 4*, where courts upheld an employer's right to enforce clear, written leave policies, especially when distinguishing between sick and vacation leave. Emphasizes the importance of consistent policy application.</p> <p><strong>Recommendation:</strong> Proceed. This is the most direct and legally sound approach.</p> </ExpandableOption> <ExpandableOption title="Option B – Accommodating / Exception-Based"> <p>“While our policy doesn't typically allow for this, we can make an exception in this case and allow you to use a portion of your sick leave before your departure.”</p> <p><strong>Policy Match:</strong> N/A - Contradicts policy</p> <p><strong>Risk Score:</strong> High</p> <p><strong>Legal Reference:</strong> *Davis v. Charter School Partners*, where making an exception for one employee created a precedent that the school was later forced to honor for others, leading to significant unplanned costs. Inconsistent policy application creates risk of discrimination claims.</p> <p><strong>Recommendation:</strong> Not advised. Creates a dangerous precedent and undermines the handbook.</p> </ExpandableOption> <ExpandableOption title="Option C – Vague & Deferring"> <p>“We will need to review your request with the business office and will get back to you at a later date.”</p> <p><strong>Policy Match:</strong> N/A</p> <p><strong>Risk Score:</strong> Moderate</p> <p><strong>Legal Reference:</strong> In *Chen v. Academy of Arts*, delaying a clear answer on a separation-related matter was interpreted as evasive, increasing employee frustration and contributing to a constructive discharge claim (though ultimately unsuccessful, it was costly to defend).</p> <p><strong>Recommendation:</strong> Not advised. Delays a clear answer and can create false hope, leading to more frustration.</p> </ExpandableOption> </> },
             step5: { title: "Projected Complainant Reactions", content: <> <ExpandableOption title="Option A"> <p><strong>Likely Response:</strong> Employee may be disappointed but understands the decision is based on established policy, not personal animus. Escalation is unlikely as the policy is clear.</p> <p><strong>School Risk:</strong> Low – The decision is defensible and based on consistent application of written policy.</p> </ExpandableOption> <ExpandableOption title="Option B"> <p><strong>Likely Response:</strong> Employee is satisfied. However, this may create morale issues with other staff who were not granted similar exceptions. Sets a precedent for future requests upon separation.</p> <p><strong>School Risk:</strong> High – Future employees could claim discrimination if not offered the same benefit, undermining the handbook.</p> </ExpandableOption> <ExpandableOption title="Option C"> <p><strong>Likely Response:</strong> Employee becomes anxious and frustrated by the delay. May begin to feel they are being treated unfairly, increasing the likelihood of consulting legal counsel or complaining to other staff.</p> <p><strong>School Risk:</strong> Moderate – The ambiguity and delay can be perceived as weakness or unfair treatment, potentially escalating the situation.</p> </ExpandableOption> </> },
-            // FIXED: Added the missing comma that was causing the syntax error.
             step6: {
                 title: "Final Recommendation & Action Plan",
                 content: {
@@ -657,7 +649,7 @@ function RiskAssessmentCenter({ handbookText, apiKey, handbookSectionLanguage, o
         7.  **For Step 4 & 5:** The 'content' must be an object with keys "optionA", "optionB", "optionC". Each option must be an object with its own title and various text properties. The projected reactions in Step 5 must be nuanced and explain potential consequences.
         8.  **For Step 6:** The 'recommendationSummary' MUST be a string formatted with bolded headers like this: "**Recommended Option:** [Option]\\n**Why:** [Explanation]\\n**Confidence Level:** [Level]\\n**Legal Review Advised:** [Yes/No and when]". The 'implementationSteps' MUST be a clear, actionable checklist as an array of strings, with each string being a complete sentence for a single step, prefixed with its number (e.g., "1. Do this first.").
         9.  **NEW CRITICAL RULE:** When you find a handbook policy in the source material like "2.4 Non-Discrimination and Harassment", your response MUST ONLY use the section number format (e.g., "Section 2.4"). DO NOT include the policy title (like "Non-Discrimination and Harassment") or repeat the section number in your output.
-       10. **DO NOT INVENT SPECIFIC DETAILS.** Your response must ONLY use information from the "User-Provided Scenario." Do not add specific names (e.g., "Jane Doe"), dates (e.g., "October 26, 2023"), or locations unless they are in the user's query. If details are needed but not provided, use generic placeholders like "[Complainant Name]," "[Date of Incident]," or "[Location]."
+        10. **DO NOT INVENT SPECIFIC DETAILS.** Your response must ONLY use information from the "User-Provided Scenario." Do not add specific names (e.g., "Jane Doe"), dates (e.g., "October 26, 2023"), or locations unless they are in the user's query. If details are needed but not provided, use generic placeholders like "[Complainant Name]," "[Date of Incident]," or "[Location]."
         --- START OF SOURCE MATERIALS ---
         ${sourceMaterials}
         --- END OF SOURCE MATERIALS ---
@@ -1041,7 +1033,7 @@ function IndustryQuestionsCard({ industryQuestions, onSectionLinkClick, onLegalL
         </div>
     );
 }
-   
+    
 // --- New Helper for Highlighting Text ---
 function HighlightedText({ text, highlight }) {
     if (!highlight || !text) {
@@ -1066,7 +1058,7 @@ function HighlightedText({ text, highlight }) {
     );
 }
 
-// --- Main App Component ---
+// --- DATA ---
 const handbookSectionLanguage = {
     "1. Introduction": `1.1 Welcome\nAs a member of the faculty and staff of TS (“TS”), employees are a vital part of this educational community, the purpose of which is to help young people achieve their full potential as students and citizens. We hope and expect that employees’ participation in this endeavor will be a rich and rewarding experience and will help the school set the highest standards for personal and professional lives that help promote the school’s mission. \n\n1.2 Purpose of Employee Handbook\nThe purpose of this employee handbook is to provide employees with a general guide to policies, practices, and benefits at TS. If used in conjunction with the Student/Parent Handbook, it will answer some of the more common questions that arise. This handbook is general in nature and not intended to be comprehensive or to address all of the possible applications of, or exceptions to, the general policies and procedures described. TS reserves the right to modify, supplement, or rescind from time to time any of the policies, practices, and benefits described in this handbook as it deems appropriate in TS’s sole discretion with or without notice. Where applicable, the benefit plan documents will govern the administration of TS benefits.\n\nThis employee handbook is not an express or implied contract for employment or any purpose, and nothing contained in this handbook is intended or should be construed as a guarantee of employment or any benefit for any period of time. Except for those faculty and administrators employed pursuant to individual written employment contracts, employment at TS is “at-will,” which means that employment is not for a fixed term and may be terminated by TS or the employee at any time for any reason with or without notice.\n\nAfter reading these policies, any questions should be directed to your supervisor or the Director of Finance. TS employees are expected to follow all TS policies and guidelines. As set forth in more detail herein, failure to comply with the policies set forth in this handbook may result in disciplinary action, up to and including termination of employment. Nothing in this employee handbook is intended to result in non-compliance with applicable laws or regulations. If there is a conflict between this Handbook and any federal, state, or local law or regulation, the law or regulation will govern.`,
     "2. Equal Employment Opportunity Policies and Procedures": `2.1 Equal Employment Opportunity \nTS provides equal employment opportunity to all students, employees and applicants without regard to race, color, religion, sex, age, national origin, sexual orientation, disability, veteran status, family medical history, genetic information or any other legally protected category. This policy governs all student-related decisions and employment decisions, including recruitment, hiring, job assignment, compensation, training, promotion, discipline, transfer, leave-of-absence, access to benefits, layoff, recall, termination and other personnel matters. All student-related and employment-related decisions are based solely upon legitimate, non-discriminatory factors.\n\n2.2 Employment Eligibility \nIn compliance with the Immigration Reform and Control Act of 1986 (“IRCA”) TS is required to verify employment eligibility for each employee hired. New employees must present documentation within three days of hire proving identity and eligibility for employment as required by IRCA. TS will employ only persons who are authorized to work in the United States. Each employee is required to complete an Employment Eligibility Verification Form (Form I-9).\n\n2.3 Americans with Disabilities Act Policy \nTS complies with the Americans with Disabilities Act (“ADA”), as amended by the ADA Amendments Act (“ADAAA”), and all applicable state and local fair employment practices laws, and is committed to providing equal employment opportunities to qualified individuals with disabilities. Consistent with this commitment, TS will provide a reasonable accommodation to disabled applicants and employees if the reasonable accommodation would allow the individual to perform the essential functions of the job, unless doing so would create undue hardship. \n\n2.4 Non-Discrimination and Harassment \nTS is committed to providing a school environment that is free from all forms of discrimination and harassment. Harassment consists of unwelcome conduct, whether verbal, physical or visual, that is based upon or derisive of a person’s race, color, religion, sex, age, national origin, sexual orientation, disability, veteran status, family medical history, genetic information or other legally protected characteristics or conduct, where the unwelcome conduct affects tangible job benefits, unreasonably interferes with an individual’s work performance, or creates an intimidating, hostile, or offensive working environment. All employees have a personal responsibility to keep the work place free of any such harassment.`,
@@ -1322,12 +1314,12 @@ export default function App() {
 
     const [pendingUpdates, setPendingUpdates] = useState([
     { id: 1, title: "New State Law on Student Social Media Interaction", date: "2025-09-04", type: "Immediate Action Required", affectedSection: "6. Code of Conduct", rationale: "This new state law requires a more explicit policy than what is currently stated in the handbook regarding teacher-student communication on social media.", suggestedLanguage: "\n\n**6.3.1 Social Media and Electronic Communication:** All electronic communication between employees and students must be professional in nature and transparent. Employees are prohibited from 'friending' or 'following' current students on personal social media accounts. All communication should occur on school-approved platforms." }
- ]);
+   ]);
     const [archivedUpdates, setArchivedUpdates] = useState([]);
     const [monitoredTrends, setMonitoredTrends] = useState([
     { id: 2, title: "AI Integration in K-12 Curriculum", date: "2025-08-28", type: "Monitor for Future Consideration" },
     { id: 3, title: "Rise in Four-Day School Weeks", date: "2025-08-25", type: "Monitor for Future Consideration" },
-  ]);
+    ]);
 
     const [reviewingUpdate, setReviewingUpdate] = useState(null);
     const [industryQuestions, setIndustryQuestions] = useState([
@@ -1339,7 +1331,7 @@ export default function App() {
     { id: 16, category: 'Student, Parent & Faculty Handbook Policy Questions', question: 'How should we approach a report that a student sent explicit images to an adult (prior to a school trip)?', answer: 'Solution: Immediate action is critical. The student should be removed from the trip pending an investigation. The school must follow its child protection policy, which includes reporting the incident to the appropriate authorities (e.g., child protective services).' },
     { id: 23, category: 'Student, Parent & Faculty Handbook Policy Questions', question: 'Do you allow faculty to babysit or tutor current students outside of school? What policy language do you use?', answer: 'Solution: Many schools prohibit or strongly discourage this to avoid dual-role conflicts of interest. A policy should clearly state the school\'s position and require disclosure and approval from a division head if exceptions are considered.' },
     { id: 27, category: 'Governance and Board Topics', question: 'Who signs the annual tuition increase letter: Head, Board Chair, Business Officer, or someone else?', answer: 'Solution: The Board Chair should sign the letter, as setting tuition is a primary fiduciary responsibility of the Board. The Head of School may be a co-signer to show administrative support for the decision.' },
-  ]);
+    ]);
     const handleOpenLegalJournal = useCallback((caseName) => {
         setLegalJournalQuery(caseName);
         setIsLegalJournalOpen(true);
@@ -1359,15 +1351,6 @@ export default function App() {
         setLegalJournalQuery("");
     };
 
-    // Data and Constants
-    const SIDEBAR_LINKS = [
-        { key: "dashboard", label: "Dashboard", icon: <Shield className="w-5 h-5" /> },
-        { key: "risk", label: "IQ Risk Assessment Center", icon: <AlertCircle className="w-5 h-5" /> },
-        { key: "handbook", label: "IQ Handbook", icon: <BookOpen className="w-5 h-5" /> },
-        { key: "calendar", label: "Calendar", icon: <Calendar className="w-5 h-5" /> },
-        { key: "hosqa", label: "IQ School Leaders Q&A", icon: <MessageCircle className="w-5 h-5" /> },
-        { key: "legal", label: "IQ Legal Guidance", icon: <Gavel className="w-5 h-5" /> }
-    ];
     // --- NEW HANDLERS for the Policy Watchtower workflow ---
     const handleApproveUpdate = (update) => {
         const sectionKey = Object.keys(handbook).find(key => key.startsWith(update.affectedSection.split(' ')[0]));
@@ -1394,20 +1377,6 @@ export default function App() {
     };
     const SCHOOL_LOGO = "https://i.ytimg.com/vi/wNI9LjpwVDU/maxresdefault.jpg";
 
-    const alerts = [
-        { text: "New Dept. of Ed guidance on 'Equitable Services' for private schools under Title I.", date: "2025-08-21", link: "https://www.ed.gov/about/news/press-release/us-department-of-education-issues-equitable-service-school-choice-guidance" },
-        { text: "Federal tax credit scholarship program passes Senate, impacting school choice funding.", date: "2025-07-01", link: "https://www.the74million.org/article/big-tax-bill-passes-senate-with-less-beautiful-plan-for-national-school-choice/" },
-        { text: "Policy update on bullying resolved", date: "2025-07-17" },
-        { text: "Incident on field trip", date: "2025-07-15" },
-    ];
-
-    const trends = [
-        { text: "Data indicates a slowdown in the post-pandemic private school enrollment boom.", date: "2025-07-28", link: "https://www.cato.org/survey-reports/survey-is-private-school-enrollment-boom-ending" },
-        { text: "AI integration for personalized learning and security becoming a key focus for K-12.", date: "2025-01-10", link: "https://edtechmagazine.com/k12/article/2025/01/ai-trends-ed-tech-watch-2025" },
-        { text: "State law on faculty licensure changed", date: "2025-07-17", hasButton: true },
-        { text: "Cyberbullying legislation signed", date: "2025-07-13" },
-    ];
-
     const handbookSections = (onSectionLinkClick) => [
         { section: "1. Introduction", vulnerabilities: [{ text: "The 'at-will' statement is present but could be more prominent to ensure it's not missed.", source: "Legal Best Practice", date: "2025-08-20" }] },
         { section: "2. Equal Employment Opportunity Policies and Procedures", vulnerabilities: [{ text: "Missing an explicit, anonymous reporting channel for harassment complaints, which is an emerging best practice.", source: "Industry Trend", date: "2025-06-22" }] },
@@ -1418,60 +1387,6 @@ export default function App() {
     ];
 
     const fullHandbookText = Object.values(handbookSectionLanguage).join("\n\n");
-
-    const suggestedSectionLanguage = {
-        "2. Equal Employment Opportunity": `To further enhance our commitment...`,
-        "5. Harassment and Bullying Policy": `An anonymous reporting procedure has been established...`,
-    };
-
-    const hosQaTopics = ["All", "Discipline", "HR", "Student Safety"];
-
-    function formatDate(dateStr) {
-        if (!dateStr) return "";
-        const d = new Date(dateStr);
-        return d.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
-    }
-
-    const handleShowSuggestion = (item) => {
-        const suggestionMap = {
-            "New law on volunteer screening": <span>Update <SectionLink number="3.2" onLinkClick={handleSectionLinkClick} /> (Background Checks) to incorporate new state requirements for volunteer screening procedures, including frequency and scope of checks.</span>,
-            "Pending Title IX update in Congress": <span>Review and prepare draft updates for <SectionLink number="2.4" onLinkClick={handleSectionLinkClick} /> (Non-Discrimination and Harassment) to align with anticipated changes to Title IX regulations.</span>,
-            "Cyberbullying legislation signed": <span>Update <SectionLink number="6.3" onLinkClick={handleSectionLinkClick} /> (Student - Employee Relationship) and add a Technology Acceptable Use Policy to include specific language addressing cyberbullying and digital citizenship.</span>
-        };
-        const defaultSuggestion = `Based on the topic "${item.text}", consider updating the relevant handbook section.`;
-
-        setSuggestedUpdate(suggestionMap[item.text] || defaultSuggestion);
-        suggestionSectionRef.current = `Alert/Trend: ${item.text}`;
-        setShowSuggestionModal(true);
-    };
-
-    const handleHosQaClose = () => {
-        setCurrentAnswer(null);
-        setSubmittedQuestion(null);
-    };
-
-    const handleTopicSearch = () => {
-        if (!handbookTopicQuery) return;
-        setIsAnalyzingTopic(true);
-        setHandbookTopicResults(null);
-        setTimeout(() => {
-            const query = handbookTopicQuery.toLowerCase();
-            const results = [];
-            for (const sectionTitle in handbookSectionLanguage) {
-                const sectionText = handbookSectionLanguage[sectionTitle];
-                const subsections = sectionText.split(/(?=\n\d+\.\d+ )/);
-                const foundSubsections = subsections.filter(sub => sub.toLowerCase().includes(query));
-                if (foundSubsections.length > 0) {
-                    results.push({
-                        mainTitle: sectionTitle,
-                        subsections: foundSubsections.map(s => s.trim()),
-                    });
-                }
-            }
-            setHandbookTopicResults(results);
-            setIsAnalyzingTopic(false);
-        }, 1500);
-    };
 
     const handleLegalQaSubmit = async () => {
         const questionText = legalQuestion;
@@ -1484,28 +1399,28 @@ export default function App() {
         setIsAnalyzingLegal(true);
         setLegalAnswer(null);
         setLegalQuestion("");
-       
-const prompt = `Analyze the legal question for a school administrator.
-CRITICAL INSTRUCTIONS:
-1.  Your entire response must be a single, valid JSON object.
-2.  **Global Formatting Rule:** Throughout the ENTIRE response, whenever you cite a legal statute (e.g., Title IX) or court case (e.g., *Davis v. Monroe*), you MUST format it for linking. Wrap statutes in double asterisks (**Statute Name**) and court cases in single asterisks (*Case Name*).
-3.  For the 'references' object: You MUST provide one **primary, highly-relevant court case** from a K-12 or analogous higher-education context. Populate the 'citation' field with the formatted case name and the 'relevance' field with a concise explanation. If no case can be found, state that in the 'citation' field.
-4.  For the 'guidance' field: Provide a thorough analysis. In your explanation, identify and cite **all relevant statutes** using the required formatting.
-
-Question: "${questionText}"`;
         
+   const prompt = `Analyze the legal question for a school administrator.
+   CRITICAL INSTRUCTIONS:
+   1.  Your entire response must be a single, valid JSON object.
+   2.  **Global Formatting Rule:** Throughout the ENTIRE response, whenever you cite a legal statute (e.g., Title IX) or court case (e.g., *Davis v. Monroe*), you MUST format it for linking. Wrap statutes in double asterisks (**Statute Name**) and court cases in single asterisks (*Case Name*).
+   3.  For the 'references' object: You MUST provide one **primary, highly-relevant court case** from a K-12 or analogous higher-education context. Populate the 'citation' field with the formatted case name and the 'relevance' field with a concise explanation. If no case can be found, state that in the 'citation' field.
+   4.  For the 'guidance' field: Provide a thorough analysis. In your explanation, identify and cite **all relevant statutes** using the required formatting.
+
+   Question: "${questionText}"`;
+       
         const legalResponseSchema = {
             type: "OBJECT",
             properties: {
                 "guidance": { "type": "STRING" },
                 "references": {
-            type: "OBJECT",
-            properties: {
-                "citation": { "type": "STRING" },
-                "relevance": { "type": "STRING" }
-             },
-            required: ["citation", "relevance"]
-            },
+               type: "OBJECT",
+               properties: {
+                   "citation": { "type": "STRING" },
+                   "relevance": { "type": "STRING" }
+                },
+               required: ["citation", "relevance"]
+                },
                 "risk": {
                     type: "OBJECT",
                     properties: {
@@ -1642,32 +1557,40 @@ Question: "${questionText}"`;
                     </div>
                  </div>
                  {showEventModal && (
-                      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-                          <div className="bg-white p-6 rounded-2xl shadow-2xl max-w-sm w-full">
-                              <h3 className="text-xl font-bold mb-4">Add Event for {new Date(selectedDate + 'T00:00:00').toLocaleDateString()}</h3>
-                              <input
-                                  type="text"
-                                  value={newEventTitle}
-                                  onChange={(e) => setNewEventTitle(e.target.value)}
-                                  placeholder="Event Title"
-                                  className="w-full p-2 border rounded-md mb-4"
-                              />
-                              <div className="flex justify-end gap-2">
-                                  <button className="rounded-lg px-4 py-2 border" onClick={() => setShowEventModal(false)}>Cancel</button>
-                                  <button className="bg-blue-600 text-white font-semibold px-4 py-2 rounded-lg" onClick={handleSaveEvent}>Save Event</button>
-                              </div>
-                          </div>
-                      </div>
+                       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+                           <div className="bg-white p-6 rounded-2xl shadow-2xl max-w-sm w-full">
+                               <h3 className="text-xl font-bold mb-4">Add Event for {new Date(selectedDate + 'T00:00:00').toLocaleDateString()}</h3>
+                               <input
+                                   type="text"
+                                   value={newEventTitle}
+                                   onChange={(e) => setNewEventTitle(e.target.value)}
+                                   placeholder="Event Title"
+                                   className="w-full p-2 border rounded-md mb-4"
+                               />
+                               <div className="flex justify-end gap-2">
+                                   <button className="rounded-lg px-4 py-2 border" onClick={() => setShowEventModal(false)}>Cancel</button>
+                                   <button className="bg-blue-600 text-white font-semibold px-4 py-2 rounded-lg" onClick={handleSaveEvent}>Save Event</button>
+                               </div>
+                           </div>
+                       </div>
                  )}
             </div>
         );
     };
+    
+    // --- SIDEBAR DATA ---
+    const SIDEBAR_LINKS = [
+        { key: "dashboard", label: "Dashboard", icon: <Shield className="w-5 h-5" /> },
+        { key: "risk", label: "IQ Risk Assessment Center", icon: <AlertCircle className="w-5 h-5" /> },
+        { key: "handbook", label: "IQ Handbook", icon: <BookOpen className="w-5 h-5" /> },
+        { key: "calendar", label: "Calendar", icon: <Calendar className="w-5 h-5" /> },
+        { key: "hosqa", label: "IQ School Leaders Q&A", icon: <MessageCircle className="w-5 h-5" /> },
+        { key: "legal", label: "IQ Legal Guidance", icon: <Gavel className="w-5 h-5" /> }
+    ];
 
-// --- Main page rendering logic ---
+    // --- MAIN PAGE RENDERING LOGIC ---
     const renderPage = () => {
-        // This is the new logic: if the user is reviewing an update, show the review screen.
         if (reviewingUpdate) {
-            // Find the specific handbook section text to show in the review screen
             const sectionKey = Object.keys(handbook).find(key => key.startsWith(reviewingUpdate.affectedSection.split(' ')[0]));
             const sectionText = handbook[sectionKey];
 
@@ -1681,12 +1604,12 @@ Question: "${questionText}"`;
             />;
         }     
 
-switch (page) {
-    case 'dashboard':
-        return <Dashboard />;
+        switch (page) {
+            case 'dashboard':
+                return <Dashboard />;
 
-    case 'risk':
-        return <RiskAssessmentCenter 
+            case 'risk':
+                return <RiskAssessmentCenter 
                     handbookText={fullHandbookText} 
                     apiKey={GEMINI_API_KEY} 
                     handbookSectionLanguage={handbook} 
@@ -1694,39 +1617,27 @@ switch (page) {
                     onLegalLinkClick={handleOpenLegalJournal} 
                 />;
 
-    case 'handbook':
-        return (
-            <div className="max-w-4xl mx-auto space-y-8">
-                <PolicyWatchtower
+            case 'handbook':
+                return <Handbook
+                    handbookContent={handbook}
+                    selectedSection={selectedSection}
+                    setSelectedSection={setSelectedSection}
+                    isSectionLanguageOpen={isSectionLanguageOpen}
+                    setIsSectionLanguageOpen={setIsSectionLanguageOpen}
+                    handleSectionLinkClick={handleSectionLinkClick}
                     pendingUpdates={pendingUpdates}
                     archivedUpdates={archivedUpdates}
                     monitoredTrends={monitoredTrends}
                     onViewUpdate={setReviewingUpdate}
-                />
-                <Handbook
-                    handbookContent={handbook}
-                    handbookSections={handbookSections}
-                    handleSectionLinkClick={handleSectionLinkClick}
-                    isSectionLanguageOpen={isSectionLanguageOpen}
-                    setIsSectionLanguageOpen={setIsSectionLanguageOpen}
-                    selectedSection={selectedSection}
-                    setSelectedSection={setSelectedSection}
-                    setShowSuggestionModal={setShowSuggestionModal}
-                    setSuggestedUpdate={setSuggestedUpdate}
-                    suggestionSectionRef={suggestionSectionRef}
-                    suggestedSectionLanguage={suggestedSectionLanguage}
-                />
-                <HandbookAuditCard />
-                <HandbookComparisonCard apiKey={GEMINI_API_KEY} />
-                <HandbookVulnerabilitiesCard sections={handbookSections} onSectionLinkClick={handleSectionLinkClick} />
-            </div>
-        );
+                    apiKey={GEMINI_API_KEY}
+                    HandbookVulnerabilitiesCardComponent={(props) => <HandbookVulnerabilitiesCard {...props} sections={handbookSections}/>}
+                />;
 
-    case 'calendar':
-        return <CALENDAR />;
+            case 'calendar':
+                return <CALENDAR />;
 
-    case 'hosqa':        
-        return <HOSQA
+            case 'hosqa':      
+                return <HOSQA
                     industryQuestions={industryQuestions}
                     setIndustryQuestions={setIndustryQuestions}
                     onSectionLinkClick={handleSectionLinkClick}
@@ -1741,8 +1652,8 @@ switch (page) {
                     setHosQaQuestion={setHosQaQuestion}
                 />;
 
-    case 'legal':
-        return <LEGAL
+            case 'legal':
+                return <LEGAL
                     legalQuestion={legalQuestion}
                     setLegalQuestion={setLegalQuestion}
                     submittedLegalQuestion={submittedLegalQuestion}
@@ -1754,95 +1665,95 @@ switch (page) {
                     handleOpenLegalJournal={handleOpenLegalJournal}
                 />;
 
-    default:
-        return <Dashboard />;
-}
+            default:
+                return <Dashboard />;
+        }
+    }
+    
+    // --- MAIN APP LAYOUT ---
     return (
         <div className="min-h-screen flex flex-col" style={{ background: "#fff" }}>
           <header className="shadow flex items-center justify-between px-4 sm:px-8 py-4" style={{ background: "#7c2d2d" }}>
-    <div className="flex items-center gap-4">
-        <img
-            src={SCHOOL_LOGO}
-            alt="School Logo"
-            className="h-16 w-16 md:h-20 md:w-20 rounded-2xl border-4 border-white object-cover shadow-lg"
-        />
-    </div>
-    <div className="hidden md:block text-right">
-        <div
-            className="flex items-center justify-end"
-            style={{
-                color: "#fff",
-                fontSize: "2.5rem",
-                lineHeight: 1.1,
-                fontFamily: 'Arial, sans-serif'
-            }}
-        >
-            <span className="font-normal">
-                Navigation IQ
-                <sup style={{ fontSize: '0.3em', position: 'relative', top: '-1.5em', marginLeft: '2px' }}>TM</sup>
-            </span>
-        </div>
-        <div
-            className="font-semibold"
-            style={{
-                color: "#faecc4",
-                fontSize: "0.9rem",
-                marginTop: "4px",
-                lineHeight: 1.4
-            }}
-        >
-            The Smart Navigation System for School Policy, Risk Management,
-            <br />
-            Incident Guidance, and Regulatory Insights
-        </div>
-    </div>
-    <div className="md:hidden">
-        <button onClick={() => setIsMobileMenuOpen(true)} className="text-white">
-            <Menu size={32} />
-        </button>
-    </div>
-</header>
+            <div className="flex items-center gap-4">
+                <img
+                    src={SCHOOL_LOGO}
+                    alt="School Logo"
+                    className="h-16 w-16 md:h-20 md:w-20 rounded-2xl border-4 border-white object-cover shadow-lg"
+                />
+            </div>
+            <div className="hidden md:block text-right">
+                <div
+                    className="flex items-center justify-end"
+                    style={{
+                        color: "#fff",
+                        fontSize: "2.5rem",
+                        lineHeight: 1.1,
+                        fontFamily: 'Arial, sans-serif'
+                    }}
+                >
+                    <span className="font-normal">
+                        Navigation IQ
+                        <sup style={{ fontSize: '0.3em', position: 'relative', top: '-1.5em', marginLeft: '2px' }}>TM</sup>
+                    </span>
+                </div>
+                <div
+                    className="font-semibold"
+                    style={{
+                        color: "#faecc4",
+                        fontSize: "0.9rem",
+                        marginTop: "4px",
+                        lineHeight: 1.4
+                    }}
+                >
+                    The Smart Navigation System for School Policy, Risk Management,
+                    <br />
+                    Incident Guidance, and Regulatory Insights
+                </div>
+            </div>
+            <div className="md:hidden">
+                <button onClick={() => setIsMobileMenuOpen(true)} className="text-white">
+                    <Menu size={32} />
+                </button>
+            </div>
+        </header>
 
-           <div className="flex flex-1 min-h-0" style={{ background: "#7c2d2d" }}>
-    {/* Overlay for mobile menu */}
-    {isMobileMenuOpen && (
-        <div
-            className="fixed inset-0 bg-black bg-opacity-50 z-20 md:hidden"
-            onClick={() => setIsMobileMenuOpen(false)}
-        ></div>
-    )}
+            <div className="flex flex-1 min-h-0" style={{ background: "#7c2d2d" }}>
+                {isMobileMenuOpen && (
+                    <div
+                        className="fixed inset-0 bg-black bg-opacity-50 z-20 md:hidden"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                    ></div>
+                )}
+                <aside className={`fixed md:relative top-0 left-0 h-full z-30 pt-2 px-4 flex flex-col gap-2 min-w-[250px] shadow-md transition-transform duration-300 ease-in-out ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0`} style={{ background: "#7c2d2d" }}>
+                    <div className="md:hidden flex justify-end mb-2">
+                        <button onClick={() => setIsMobileMenuOpen(false)} className="text-white">
+                        <X size={28} />
+                    </button>
+                    </div>
+                    {SIDEBAR_LINKS.map(link => (
+                        <button
+                            key={link.key}
+                            className="flex items-center gap-3 px-5 py-2 w-full justify-start text-base font-semibold rounded-lg shadow border-2 border-white transition-all"
+                            style={{
+                                background: page === link.key ? "#7c2d2d" : "#fff",
+                                color: page === link.key ? "#fff" : "#111",
+                                borderColor: "#fff"
+                            }}
+                            onClick={() => {
+                                setPage(link.key);
+                                setIsMobileMenuOpen(false);
+                            }}
+                        >
+                            {React.cloneElement(link.icon, { color: page === link.key ? "#fff" : "#7c2d2d" })}
+                            {link.label}
+                        </button>
+                    ))}
+                </aside>
 
-    {/* Sidebar */}
-    <aside className={`fixed md:relative top-0 left-0 h-full z-30 pt-2 px-4 flex flex-col gap-2 min-w-[250px] shadow-md transition-transform duration-300 ease-in-out ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0`} style={{ background: "#7c2d2d" }}>
-        <div className="md:hidden flex justify-end mb-2">
-                <button onClick={() => setIsMobileMenuOpen(false)} className="text-white">
-                <X size={28} />
-            </button>
-        </div>
-        {SIDEBAR_LINKS.map(link => (
-            <button
-                key={link.key}
-                className="flex items-center gap-3 px-5 py-2 w-full justify-start text-base font-semibold rounded-lg shadow border-2 border-white transition-all"
-                style={{
-                    background: page === link.key ? "#7c2d2d" : "#fff",
-                    color: page === link.key ? "#fff" : "#111",
-                    borderColor: "#fff"
-                }}
-                onClick={() => {
-                    setPage(link.key);
-                    setIsMobileMenuOpen(false); // Close menu on navigation
-                }}
-            >
-                {React.cloneElement(link.icon, { color: page === link.key ? "#fff" : "#7c2d2d" })}
-                {link.label}
-            </button>
-        ))}
-    </aside>
-
-    <main className="flex-1 p-4 md:p-10 overflow-y-auto w-full" style={{ background: "#f3f4f6" }}>
-      {renderPage()}
-    </main>
-</div>
+                <main className="flex-1 p-4 md:p-10 overflow-y-auto w-full" style={{ background: "#f3f4f6" }}>
+                    {renderPage()}
+                </main>
+            </div>
 
             {showSuggestionModal && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
