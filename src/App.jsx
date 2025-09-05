@@ -9,6 +9,8 @@ import ExpandableOption from './components/ExpandableOption.jsx';
 import PolicyWatchtower from './components/PolicyWatchtower.jsx';
 import ReviewUpdate from './components/ReviewUpdate.jsx';
 import Dashboard from './components/Dashboard.jsx';
+import Handbook from './components/Handbook.jsx';
+import HandbookAuditCard from './components/HandbookAuditCard.jsx';
 
 // --- SECURE API KEY HANDLING ---
 
@@ -1085,116 +1087,6 @@ const findSectionByNumber = (numberStr) => {
     return null;
 };
 
-function DASHBOARD() {
-    return (
-        <div className="flex flex-col gap-8 max-w-4xl mx-auto">
-            <div className="shadow-2xl border-0" style={{ background: "#4B5C64" }}>
-                <div className="p-6" style={{ color: "#fff" }}>
-                    <SectionHeader icon={<Shield className="text-blue-400" size={28} />} title="Welcome" />
-                    <div className="text-lg text-white mb-3 space-y-4">
-                        <p><strong>Navigation IQ<sup style={{ fontSize: '0.6em' }}>TM</sup> is the new standard in dynamic policy, guidance, and risk management for school leaders.</strong></p>
-                        <p>Our System has been designed with input from school leaders as an intelligence based Micro Utility providing proactive clarity and solutions for risk management, policy guidance, industry insights, and counsel, empowering school leaders with efficient certainty to stay ahead of day-to-day challenges.</p>
-                        <p>Resolve faculty/student/parent issues and complaints, navigate legal complexities, identify handbook vulnerabilities, and protect your school community, while saving time, reducing costs, and strengthening your leadership impact.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
-}
-
-function HANDBOOK({    
-    handbookContent,
-    handbookSections,
-    handleSectionLinkClick,
-    isSectionLanguageOpen,
-    setIsSectionLanguageOpen,
-    selectedSection,
-    setSelectedSection,
-    setShowSuggestionModal,
-    setSuggestedUpdate,
-    suggestionSectionRef,
-    suggestedSectionLanguage,
-    fullHandbookText,
-    pendingUpdates,
-    archivedUpdates,
-    monitoredTrends,
-    onViewUpdate
-}) {
-  
-return (
-    <div className="max-w-4xl mx-auto space-y-8">
-        {/* --- NEW: The Watchtower is now the first card on this page --- */}
-        <PolicyWatchtower
-            pendingUpdates={pendingUpdates}
-            archivedUpdates={archivedUpdates}
-            monitoredTrends={monitoredTrends}
-            onViewUpdate={onViewUpdate}
-        />
-
-        {/* This is the original content of the Handbook page */}
-        <div className="shadow-2xl border-0" style={{ background: "#4B5C64" }}>
-            <div className="p-6" style={{ color: "#fff" }}>
-                <SectionHeader icon={<BookOpen className="text-[#faecc4]" size={26} />} title="IQ Handbook" />
-                <div>
-                    <h3 className="text-lg font-bold mb-2" style={{ color: "#faecc4" }}>1. Review by Section</h3>
-                    <div className="mb-2">
-                        <label className="block font-medium">Select Section</label>
-                        <select
-                            className="mt-1 block w-full border rounded p-2 shadow text-black"
-                            style={{ background: "#fff", border: "2px solid #faecc4" }}
-                            value={selectedSection}
-                            onChange={e => {
-                                setSelectedSection(e.target.value);
-                                setIsSectionLanguageOpen(false);
-                            }}
-                        >
-                            {handbookSections(handleSectionLinkClick).map((s) => <option key={s.section} value={s.section}>{s.section}</option>)}
-                        </select>
-                    </div>
-                    <div className="mb-2">
-                        <button className="text-lg font-bold cursor-pointer focus:outline-none" style={{ color: "#faecc4" }} onClick={() => setIsSectionLanguageOpen(open => !open)}>
-                            {selectedSection.split('. ').slice(1).join('. ')}
-                        </button>
-                        <span className="ml-2 text-xs" style={{ color: "#fff" }}>(Click to show/hide full Handbook Section language)</span>
-                    </div>
-                    {isSectionLanguageOpen && (
-                        <div className="bg-slate-100 p-4 rounded-xl mb-4 shadow-inner border border-slate-200 whitespace-pre-line text-black" style={{ maxHeight: "320px", overflowY: "auto", fontSize: "1rem", lineHeight: "1.55" }}>
-                            {handbookContent[selectedSection] || "Language not available."}
-                        </div>
-                    )}
-                    <div className="font-semibold mt-10 mb-2" style={{ color: "#FFF" }}>Potential Section Vulnerabilities</div>
-                    <ul className="ml-6 text-sm list-disc">
-                        {(handbookSections(handleSectionLinkClick).find(s => s.section === selectedSection)?.vulnerabilities || []).map((vuln, i) => (
-                            <li key={i} className={`pl-1 mb-2 p-2 rounded-lg flex items-center gap-2 shadow ${vuln.source === "Industry Trend" ? "bg-yellow-100 border-l-4 border-yellow-400" : "bg-red-100 border-l-4 border-red-400"}`}>
-                                <AlertCircle size={16} className={vuln.source === "Industry Trend" ? "text-slate-600" : "text-red-600"} />
-                                <span style={{ color: "#334155" }}>{vuln.text}</span>
-                                <span className="ml-auto text-xs px-2 py-0.5 rounded-full font-semibold bg-slate-200 text-slate-600">{vuln.source}</span>
-                            </li>
-                        ))}
-                    </ul>
-                     <div className="flex justify-end mt-4">
-                        <button
-                            className="bg-blue-700 hover:bg-blue-800 text-white font-semibold px-6 py-2 rounded-xl shadow-lg flex items-center gap-2 transition-all"
-                            onClick={() => {
-                                const s = handbookSections(handleSectionLinkClick).find(s => s.section === selectedSection);
-                                suggestionSectionRef.current = s.section;
-                                setSuggestedUpdate(suggestedSectionLanguage[s.section] || "Clarify this policy with specific procedures.");
-                                setShowSuggestionModal(true);
-                            }}
-                        >
-                            <TrendingUp size={18} className="text-white opacity-80" />
-                            Suggested Handbook Changes
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <HandbookAuditCard />
-        <HandbookComparisonCard apiKey={GEMINI_API_KEY} />
-        <HandbookVulnerabilitiesCard sections={handbookSections} onSectionLinkClick={handleSectionLinkClick} />
-    </div>
-);
-
 function LEGAL({
     legalQuestion,
     setLegalQuestion,
@@ -1288,8 +1180,7 @@ function LEGAL({
         </div>
     );
 }
-// This is the COMPLETE and CORRECTED HOSQA component.
-// It replaces your entire existing HOSQA component.
+
 const HOSQA = ({
     industryQuestions,
     setIndustryQuestions,
@@ -1788,13 +1679,12 @@ Question: "${questionText}"`;
                 onDismiss={handleDismissUpdate}
                 onClose={() => setReviewingUpdate(null)}
             />;
-        }
-     
-// This is the FINAL version of the switch statement for your renderPage function.
+        }     
+
 switch (page) {
     case 'dashboard':
         return <Dashboard />;
-        
+
     case 'risk':
         return <RiskAssessmentCenter 
                     handbookText={fullHandbookText} 
@@ -1805,8 +1695,15 @@ switch (page) {
                 />;
 
     case 'handbook':
-        // The handbook page now receives all the state and functions it needs to operate.
-        return <HANDBOOK 
+        return (
+            <div className="max-w-4xl mx-auto space-y-8">
+                <PolicyWatchtower
+                    pendingUpdates={pendingUpdates}
+                    archivedUpdates={archivedUpdates}
+                    monitoredTrends={monitoredTrends}
+                    onViewUpdate={setReviewingUpdate}
+                />
+                <Handbook
                     handbookContent={handbook}
                     handbookSections={handbookSections}
                     handleSectionLinkClick={handleSectionLinkClick}
@@ -1818,16 +1715,17 @@ switch (page) {
                     setSuggestedUpdate={setSuggestedUpdate}
                     suggestionSectionRef={suggestionSectionRef}
                     suggestedSectionLanguage={suggestedSectionLanguage}
-                    pendingUpdates={pendingUpdates}
-                    archivedUpdates={archivedUpdates}
-                    monitoredTrends={monitoredTrends}
-                    onViewUpdate={setReviewingUpdate}
-                />;
+                />
+                <HandbookAuditCard />
+                <HandbookComparisonCard apiKey={GEMINI_API_KEY} />
+                <HandbookVulnerabilitiesCard sections={handbookSections} onSectionLinkClick={handleSectionLinkClick} />
+            </div>
+        );
 
     case 'calendar':
         return <CALENDAR />;
 
-    case 'hosqa':
+    case 'hosqa':        
         return <HOSQA
                     industryQuestions={industryQuestions}
                     setIndustryQuestions={setIndustryQuestions}
@@ -1857,8 +1755,7 @@ switch (page) {
                 />;
 
     default:
-        // If anything goes wrong, default to the main dashboard.
-        return <DASHBOARD />;
+        return <Dashboard />;
 }
     return (
         <div className="min-h-screen flex flex-col" style={{ background: "#fff" }}>
