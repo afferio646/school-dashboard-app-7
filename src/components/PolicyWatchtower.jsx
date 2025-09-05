@@ -75,7 +75,7 @@ export default function PolicyWatchtower({ pendingUpdates, archivedUpdates, moni
     return (
         <div className="shadow-2xl border-0 rounded-2xl" style={{ background: "#4B5C64", color: "#fff" }}>
             <div className="p-6">
-                <SectionHeader icon={<Bell className="text-[#faecc4]" size={28} />} title="Policy Watchtower" />
+                <SectionHeader icon={<Bell className="text-[#faecc4]" size={28} />} title="Handbook Watchtower" />
                 <p className="mb-6 text-gray-300">Proactive alerts and trends analyzed for their impact on your handbook. Review pending items that require your attention.</p>
                 
                 <div className="flex border-b border-gray-600 mb-4">
