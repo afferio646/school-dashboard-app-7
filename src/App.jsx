@@ -1949,65 +1949,53 @@ Question: "${questionText}"`;
         }
 
         // This is the old logic, now inside this function. It shows the correct page based on the sidebar selection.
-        switch (page) {
-            case 'dashboard':
-                return (
-                    <div className="flex flex-col gap-8 max-w-4xl mx-auto">
-                        <PolicyWatchtower
-                            pendingUpdates={pendingUpdates}
-                            archivedUpdates={archivedUpdates}
-                            monitoredTrends={monitoredTrends}
-                            onViewUpdate={setReviewingUpdate}
-                        />
-                        {/* We are also including your original DASHBOARD welcome message below it. */}
-                        {DASHBOARD}
-                    </div>
-                );
-            case 'risk':
-                return <RiskAssessmentCenter 
-                            handbookText={fullHandbookText} 
-                            apiKey={GEMINI_API_KEY} 
-                            handbookSectionLanguage={handbook} 
-                            onSectionLinkClick={handleSectionLinkClick} 
-                            onLegalLinkClick={handleOpenLegalJournal} 
-                        />;
-            case 'handbook':
-                // NOTE: We now pass the 'handbook' state to your HANDBOOK component
-                // so it can display the live, updated version.
-                return <HANDBOOK handbookContent={handbook} />;
-            case 'calendar':
-                return <CALENDAR />;
-            case 'hosqa':
-                return <HOSQA
-                    industryQuestions={industryQuestions}
-                    setIndustryQuestions={setIndustryQuestions}
-                    onSectionLinkClick={handleSectionLinkClick}
-                    onLegalLinkClick={handleOpenLegalJournal}
-                    submittedQuestion={submittedQuestion}
-                    setSubmittedQuestion={setSubmittedQuestion}
-                    isAnalyzing={isAnalyzing}
-                    setIsAnalyzing={setIsAnalyzing}
-                    currentAnswer={currentAnswer}
-                    setCurrentAnswer={setCurrentAnswer}
-                    hosQaQuestion={hosQaQuestion}
-                    setHosQaQuestion={setHosQaQuestion}
+switch (page) {
+    case 'dashboard':
+        return (
+            <div className="flex flex-col gap-8 max-w-4xl mx-auto">
+                {/* We will move the watchtower later. For now, we put the welcome message back. */}
+                {DASHBOARD}
+            </div>
+        );
+    case 'risk':
+        return <RiskAssessmentCenter 
+                    handbookText={fullHandbookText} 
+                    apiKey={GEMINI_API_KEY} 
+                    handbookSectionLanguage={handbook} 
+                    onSectionLinkClick={handleSectionLinkClick} 
+                    onLegalLinkClick={handleOpenLegalJournal} 
                 />;
-            case 'legal':
-                return <LEGAL />;
-            default:
-                // If something goes wrong, just show the dashboard
-                return (
-                     <div className="flex flex-col gap-8 max-w-4xl mx-auto">
-                        <PolicyWatchtower
-                            pendingUpdates={pendingUpdates}
-                            archivedUpdates={archivedUpdates}
-                            monitoredTrends={monitoredTrends}
-                            onViewUpdate={setReviewingUpdate}
-                        />
-                    </div>
-                );
-        }
-    };
+    case 'handbook':
+        // This now correctly returns your HANDBOOK component.
+        return <HANDBOOK handbookContent={handbook} />;
+    case 'calendar':
+        return <CALENDAR />;
+    case 'hosqa':
+        return <HOSQA
+            industryQuestions={industryQuestions}
+            setIndustryQuestions={setIndustryQuestions}
+            onSectionLinkClick={handleSectionLinkClick}
+            onLegalLinkClick={handleOpenLegalJournal}
+            submittedQuestion={submittedQuestion}
+            setSubmittedQuestion={setSubmittedQuestion}
+            isAnalyzing={isAnalyzing}
+            setIsAnalyzing={setIsAnalyzing}
+            currentAnswer={currentAnswer}
+            setCurrentAnswer={setCurrentAnswer}
+            hosQaQuestion={hosQaQuestion}
+            setHosQaQuestion={setHosQaQuestion}
+        />;
+    case 'legal':
+        // This now correctly returns your LEGAL component.
+        return <LEGAL />;
+    default:
+        // Default to the dashboard view
+        return (
+             <div className="flex flex-col gap-8 max-w-4xl mx-auto">
+                {DASHBOARD}
+            </div>
+        );
+}
     return (
         <div className="min-h-screen flex flex-col" style={{ background: "#fff" }}>
           <header className="shadow flex items-center justify-between px-4 sm:px-8 py-4" style={{ background: "#7c2d2d" }}>
