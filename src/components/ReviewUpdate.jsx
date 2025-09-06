@@ -40,7 +40,7 @@ export default function ReviewUpdate({ update, handbookSectionText, onApprove, o
                     {/* Column 1: The Alert/Trend */}
                     <div className="bg-gray-800 p-4 rounded-lg flex flex-col">
                         <h2 className="flex items-center gap-2 text-lg font-bold text-blue-300 mb-3 border-b border-gray-600 pb-2">
-                            <FileText size={20} /> Original Event
+                            <FileText size={20} /> IQ Alert
                         </h2>
                         <div className="text-gray-200 flex-grow">
                             <p className="font-semibold">{update.title}</p>
@@ -69,7 +69,7 @@ export default function ReviewUpdate({ update, handbookSectionText, onApprove, o
                     {/* Column 3: Proposed Handbook Change */}
                     <div className="bg-gray-800 p-4 rounded-lg flex flex-col">
                         <h2 className="flex items-center gap-2 text-lg font-bold text-yellow-300 mb-3 border-b border-gray-600 pb-2">
-                           Proposed Handbook Change
+                           IQ Suggested Handbook Change/Addition
                         </h2>
                         <div className="bg-gray-900 p-3 rounded-md max-h-60 overflow-y-auto flex-grow">
                             {renderProposedChange()}
