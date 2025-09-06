@@ -3,7 +3,7 @@ import { BookOpen } from "lucide-react";
 
 // Import the child components that this page needs
 import PolicyWatchtower from './PolicyWatchtower.jsx';
-import HandbookAuditCard from './HandbookAuditCard.jsx';
+import HandbookAuditCard from './AuditCard.jsx';
 import HandbookComparisonCard from './HandbookComparisonCard.jsx';
 // NOTE: We cannot import HandbookVulnerabilitiesCard as it is defined inside App.jsx
 // We will receive it as a prop instead.
