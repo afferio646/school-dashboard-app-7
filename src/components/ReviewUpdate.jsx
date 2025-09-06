@@ -32,7 +32,7 @@ export default function ReviewUpdate({ update, handbookSectionText, onApprove, o
             </button>
 
             <div className="bg-[#4B5C64] text-white p-6 rounded-2xl shadow-2xl">
-                <h1 className="text-3xl font-bold text-[#faecc4] mb-2">Watchtower Alert Analysis</h1>
+                <h1 className="text-3xl font-bold text-[#faecc4] mb-2">IQ Watchtower Alert Analysis</h1>
                 <p className="text-gray-300 mb-6">Analyze the generated suggestion and choose an action.</p>
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
