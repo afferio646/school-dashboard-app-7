@@ -28,7 +28,7 @@ export default function ReviewUpdate({ update, handbookSectionText, onApprove, o
         <div className="max-w-7xl mx-auto">
             <button onClick={onClose} className="flex items-center gap-2 text-sm font-semibold text-blue-400 hover:text-blue-300 mb-4 transition-colors">
                 <ArrowLeft size={16} />
-                Back to Dashboard
+                Back to IQ Handbook Center
             </button>
 
             <div className="bg-[#4B5C64] text-white p-6 rounded-2xl shadow-2xl">
@@ -49,7 +49,7 @@ export default function ReviewUpdate({ update, handbookSectionText, onApprove, o
                         </div>
                     </div>
 
-                    {/* Column 2: AI Analysis */}
+                    {/* Column 2: Analysis */}
                     <div className="bg-gray-800 p-4 rounded-lg flex flex-col">
                          <h2 className="flex items-center gap-2 text-lg font-bold text-green-300 mb-3 border-b border-gray-600 pb-2">
                             <Lightbulb size={20} /> AI Analysis
