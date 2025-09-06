@@ -1,7 +1,26 @@
 import React, { useState } from 'react';
 import { Calendar, ChevronLeft, ChevronRight } from "lucide-react";
 
-function HandbookAuditCard() {
+// The CalendarModal is a helper component and should stay inside this file or be imported if it's separate.
+// Assuming it's defined elsewhere and imported, or for simplicity, let's assume it's part of this component's logic.
+// For now, let's create a placeholder for it if it's not imported.
+function CalendarModal({ auditType, onClose }) {
+    // Assuming CalendarModal implementation exists
+    return (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+            <div className="bg-white p-6 rounded-lg">
+                <h3 className="font-bold">Schedule {auditType} Audit</h3>
+                <p>Calendar placeholder for {auditType}.</p>
+                <button onClick={onClose} className="mt-4 px-4 py-2 bg-gray-200 rounded">Close</button>
+            </div>
+        </div>
+    );
+}
+
+
+// --- THIS IS THE FIX ---
+// Added "export default" to the beginning of the line below.
+export default function HandbookAuditCard() {
     const [showCalendar, setShowCalendar] = useState(false);
     const [auditType, setAuditType] = useState('');
     const [isProcessRevealed, setIsProcessRevealed] = useState(false);
@@ -62,5 +81,3 @@ function HandbookAuditCard() {
         </>
     );
 }
-
-export default HandbookAuditCard;
