@@ -77,12 +77,12 @@ export default function PolicyWatchtower({ pendingUpdates, archivedUpdates, moni
             <div className="p-6">
                 {/* --- RENAMED THIS TITLE --- */}
                 <SectionHeader icon={<Bell className="text-[#faecc4]" size={28} />} title="IQ Handbook Watchtower" />
-                <p className="mb-6 text-gray-300">Proactive alerts and trends analyzed for their impact on your handbook. Review pending items that require your attention.</p>
+                <p className="mb-6 text-gray-300">Proactive identification of current industry legislation and trends that are analyzed for their impact on your handbook. Review alerts that require your attention.</p>
                 
                 <div className="flex border-b border-gray-600 mb-4">
-                    <TabButton tabName="pending" label="Pending Updates" count={pendingUpdates.length} />
+                    <TabButton tabName="pending" label="Actionable Alerts" count={pendingUpdates.length} />
                     <TabButton tabName="archived" label="Archived" count={archivedUpdates.length} />
-                    <TabButton tabName="monitored" label="Monitored Trends" count={monitoredTrends.length} />
+                    <TabButton tabName="monitored" label="Monitored Alerts" count={monitoredTrends.length} />
                 </div>
                 
                 <div className="space-y-3 max-h-[400px] overflow-y-auto pr-2">
