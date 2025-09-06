@@ -1579,9 +1579,9 @@ export default function App() {
     
     // --- SIDEBAR DATA ---
     const SIDEBAR_LINKS = [
-        { key: "dashboard", label: "Dashboard", icon: <Shield className="w-5 h-5" /> },
+        { key: "dashboard", label: "IQ Dashboard", icon: <Shield className="w-5 h-5" /> },
         { key: "risk", label: "IQ Risk Assessment Center", icon: <AlertCircle className="w-5 h-5" /> },
-        { key: "handbook", label: "IQ Handbook", icon: <BookOpen className="w-5 h-5" /> },
+        { key: "handbook", label: "IQ Handbook Center", icon: <BookOpen className="w-5 h-5" /> },
         { key: "calendar", label: "Calendar", icon: <Calendar className="w-5 h-5" /> },
         { key: "hosqa", label: "IQ School Leaders Q&A", icon: <MessageCircle className="w-5 h-5" /> },
         { key: "legal", label: "IQ Legal Guidance", icon: <Gavel className="w-5 h-5" /> }
