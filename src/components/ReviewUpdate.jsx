@@ -52,7 +52,7 @@ export default function ReviewUpdate({ update, handbookSectionText, onApprove, o
                     {/* Column 2: Analysis */}
                     <div className="bg-gray-800 p-4 rounded-lg flex flex-col">
                          <h2 className="flex items-center gap-2 text-lg font-bold text-green-300 mb-3 border-b border-gray-600 pb-2">
-                            <Lightbulb size={20} /> AI Analysis
+                            <Lightbulb size={20} /> Analysis
                         </h2>
                         <div className="text-gray-200 text-sm space-y-3 flex-grow">
                             <div>
